@@ -7,9 +7,10 @@ from .models import Base
 
 app = FastAPI(title="URL Shortener MVP", version="0.1.0")
 
-from .routers import health, urls, redirect
+from .routers import health, urls, redirect, auth
 
 app.include_router(health.router)
+app.include_router(auth.router)
 app.include_router(urls.router)
 app.include_router(redirect.router)
 

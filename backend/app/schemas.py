@@ -32,3 +32,25 @@ class URLStats(BaseModel):
     url: URLInfo
     total_clicks: int
     by_date: List[ClickAggregate]
+
+
+class UserBase(BaseModel):
+    email: str
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+    is_active: bool
+    plan: str
+    created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

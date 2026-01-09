@@ -1,0 +1,59 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.env
+.venv
+venv/
+ENV/
+env/
+
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.log
+uvicorn.log
+
+# =========================
+# Docker
+# =========================
+*.pid
+docker-data/
+docker-volume/
+postgres-data/
+**/postgres-data/
+
+# =========================
+# Secrets & config
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Editor / OS
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# =========================
+# Testing / coverage
+# =========================
+.coverage
+htmlcov/
+pytest_cache/
+
+# =========================
+# Node / frontend (futuro)
+# =========================
+node_modules/
+dist/
+build/

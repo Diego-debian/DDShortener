@@ -14,11 +14,8 @@ async def get_stats(session: AsyncSession, short_code: str) -> URLStats:
     if url is None:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
-    # Total clicks
-    total_result = await session.execute(
-        select(func.count(Click.id)).where(Click.url_id == url.id)
-    )
-    total_clicks = total_result.scalar() or 0
+    # Total clicks from the URL table (fast)
+    total_clicks = url.click_count
 
     # Clicks grouped by date
     group_result = await session.execute(

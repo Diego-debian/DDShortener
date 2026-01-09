@@ -1,0 +1,1 @@
+"""Service for retrieving statistics."""

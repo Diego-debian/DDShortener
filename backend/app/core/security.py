@@ -4,11 +4,7 @@ from typing import Optional
 
 from passlib.context import CryptContext
 from jose import jwt
-
-# Change this in production!
-SECRET_KEY = "super_secret_key_for_dev_only"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from .config import SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

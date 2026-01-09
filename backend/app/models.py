@@ -17,6 +17,9 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    urls = relationship("URL", back_populates="user")
+
+
 
 class URL(Base):
     __tablename__ = "urls"
@@ -32,6 +35,7 @@ class URL(Base):
     click_limit = Column(Integer, default=1000)
 
     clicks = relationship("Click", back_populates="url")
+    user = relationship("User", back_populates="urls")
 
 
 class Click(Base):

@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_session
 from ..schemas import URLCreate, URLInfo, URLStats
 from ..services import url_service, stats_service
+from ..services import url_service, stats_service
 from .auth import get_current_user
 from ..models import User
 

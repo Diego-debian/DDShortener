@@ -22,6 +22,8 @@ async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> UR
         long_url=str(url_in.long_url),
         expires_at=url_in.expires_at,
         user_id=user.id,
+        click_count=0,
+        click_limit=1000,
     )
     session.add(new_url)
     await session.commit()

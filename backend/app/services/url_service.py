@@ -11,7 +11,7 @@ async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> UR
     # Check limit for free plan
     if user.plan == "free":
         result = await session.execute(
-            select(func.count(URL.id)).where(URL.user_id == user.id, URL.is_active == True)
+            select(func.count(URL.id)).where(URL.user_email == user.email, URL.is_active == True)
         )
         count = result.scalar() or 0
         if count >= 3:
@@ -21,7 +21,7 @@ async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> UR
     new_url = URL(
         long_url=str(url_in.long_url),
         expires_at=url_in.expires_at,
-        user_id=user.id,
+        user_email=user.email,
         click_count=0,
         click_limit=1000,
     )

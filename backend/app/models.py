@@ -17,7 +17,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    urls = relationship("URL", back_populates="user")
+    # No ORM relationship to URLs - using explicit queries with user_email
 
 
 
@@ -30,12 +30,12 @@ class URL(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_email = Column(String, nullable=True, index=True)
     click_count = Column(Integer, default=0)
     click_limit = Column(Integer, default=1000)
 
     clicks = relationship("Click", back_populates="url")
-    user = relationship("User", back_populates="urls")
+    # No ORM relationship to User - using explicit queries with user_email
 
 
 class Click(Base):

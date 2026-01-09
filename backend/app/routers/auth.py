@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 
 from ..database import get_session
 from ..models import User
-from ..schemas import UserCreate, User as UserSchema, Token
+from ..schemas import UserCreate, UserLogin, User as UserSchema, Token
 from ..core.security import verify_password, get_password_hash, create_access_token, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
@@ -56,6 +56,25 @@ async def register(user_in: UserCreate, session: AsyncSession = Depends(get_sess
     return user
 
 
+@router.post("/api/auth/login-json", response_model=Token, tags=["Auth"])
+async def login_json(user_in: UserLogin, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(User).where(User.email == user_in.email))
+    user = result.scalar_one_or_none()
+    
+    if not user or not verify_password(user_in.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=30)
+    access_token = create_access_token(
+        data={"sub": user.email, "uid": user.id, "plan": user.plan}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 @router.post("/api/auth/login", response_model=Token, tags=["Auth"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(User).where(User.email == form_data.username))
@@ -70,7 +89,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
     
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.email, "uid": user.id, "plan": user.plan}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

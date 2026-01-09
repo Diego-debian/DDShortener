@@ -52,7 +52,10 @@ These limits are defined in `nginx/nginx.conf` using `limit_req_zone` and can be
 ```bash
 curl -X POST "http://localhost:8010/api/auth/register" -H "Content-Type: application/json" -d "{\"email\": \"test@test.com\", \"password\": \"secret\"}"
 curl -X POST "http://localhost:8010/api/auth/login" -d "username=test@test.com&password=secret"
+# OR via JSON:
+curl -X POST "http://localhost:8010/api/auth/login-json" -H "Content-Type: application/json" -d "{\"email\": \"test@test.com\", \"password\": \"secret\"}"
 # Save the access token
+
 ```
 
 ### 2. Create URL

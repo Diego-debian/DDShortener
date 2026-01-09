@@ -15,18 +15,16 @@ from .utils import encode_base62
 
 app = FastAPI(title="URL Shortener MVP", version="0.1.0")
 
+from .routers import health
+
+app.include_router(health.router)
+
 
 @app.on_event("startup")
 async def startup_event():
     # Create tables if they do not exist. In production use Alembic migrations.
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-
-
-@app.get("/api/health", tags=["Health"])
-async def health() -> dict:
-    """Simple health check endpoint."""
-    return {"status": "ok"}
 
 
 @app.post("/api/urls", response_model=URLInfo, status_code=201, tags=["URLs"])

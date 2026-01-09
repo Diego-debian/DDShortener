@@ -8,14 +8,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_session
 from ..schemas import URLCreate, URLInfo, URLStats
 from ..services import url_service, stats_service
+from .auth import get_current_user
+from ..models import User
 
 
 @router.post("/api/urls", response_model=URLInfo, status_code=201, tags=["URLs"])
 async def create_url(
-    url_in: URLCreate, session: AsyncSession = Depends(get_session)
+    url_in: URLCreate, 
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user)
 ) -> URLInfo:
     """Create a new shortened URL."""
-    new_url = await url_service.create_url(session, url_in)
+    new_url = await url_service.create_url(session, url_in, current_user)
     return URLInfo.model_validate(new_url)
 
 

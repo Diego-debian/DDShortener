@@ -27,6 +27,9 @@ class URL(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    click_count = Column(Integer, default=0)
+    click_limit = Column(Integer, default=1000)
 
     clicks = relationship("Click", back_populates="url")
 

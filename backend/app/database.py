@@ -1,4 +1,15 @@
-"""Database configuration and session management."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : database.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine

@@ -1,4 +1,15 @@
-"""Database models for users, URLs, and click tracking."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : models.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey

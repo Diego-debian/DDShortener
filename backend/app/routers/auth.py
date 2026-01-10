@@ -1,4 +1,15 @@
-"""User authentication and JWT endpoints."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : auth.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status

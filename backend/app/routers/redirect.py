@@ -1,4 +1,15 @@
-"""Redirect router."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : redirect.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -15,7 +26,7 @@ from ..services import redirect_service
 async def redirect_short_url(
     short_code: str, request: Request, session: AsyncSession = Depends(get_session)
 ):
-    """Redirect to the original URL and record a click."""
+    """Look up the short code and redirect to the original URL."""
     long_url = await redirect_service.get_redirect(
         session, 
         short_code, 

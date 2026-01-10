@@ -1,4 +1,15 @@
-"""Click analytics and statistics."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : stats_service.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 from fastapi import HTTPException
 from sqlalchemy import select, func, cast, Date as SQLDate
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,4 +1,15 @@
-"""Pydantic schemas for the URL shortener MVP."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : schemas.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 
 from datetime import datetime, date
 from typing import Optional, List, Dict

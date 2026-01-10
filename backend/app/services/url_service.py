@@ -1,4 +1,15 @@
-"""URL creation and free tier validation."""
+"""
+        _~_
+       (o o)   diegodebian
+      /  V  \────────────────────────────────────
+     /(  _  )\  URL Shortener API (MVP)
+       ^^ ^^     FastAPI • PostgreSQL • Docker • Nginx
+
+File   : url_service.py
+Author : Diego Parra
+Web    : https://diegodebian.online
+─────────────────────────────────────────────────
+"""
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import URL, User
 from ..schemas import URLCreate

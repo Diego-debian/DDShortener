@@ -1,167 +1,369 @@
-# URL Shortener MVP (Refactored)
+# URL Shortener MVP
 
-This project is a FastAPI-based URL shortener. It has been refactored into a modular structure using routers and services.
+A FastAPI-based URL shortener with JWT authentication, free tier limits, and click tracking.
 
-## Project Structure
+## Quickstart
 
-- `app/main.py`: Application entry point and router inclusion.
-- `app/models.py`: Database models (`User`, `URL`, `Click`).
-- `app/schemas.py`: Pydantic schemas.
-- `app/core/config.py`: Environment configuration.
-- `app/core/security.py`: Authentication utilities (JWT, hashing).
-- `app/routers/`: API endpoints.
-  - `health.py`: Health check logic.
-  - `urls.py`: URL management (create, stats).
-  - `redirect.py`: Redirection logic.
-  - `auth.py`: User authentication (register, login).
-- `app/services/`: Business logic.
-  - `url_service.py`: URL creation logic.
-  - `redirect_service.py`: Redirect lookup and click tracking.
-  - `stats_service.py`: Statistics aggregation.
+```powershell
+# 1. Start services
+docker compose up --build -d
 
-## Rate Limiting (Nginx)
-
-The project includes basic rate limiting configured in Nginx to protect the application:
-
-- **URL Creation (`POST /api/urls`)**: Limited to **1 request/second** (burst 3).
-- **Redirects & Others (`GET /...`)**: Limited to **10 requests/second** (burst 20).
-
-These limits are defined in `nginx/nginx.conf` using `limit_req_zone` and can be adjusted there.
-
-## How to Run
-
-1. **Start the stack**:
-   ```bash
-   docker compose up --build
-   ```
-
-2. **Endpoints**:
-
-   - **Health**: `GET /api/health`
-   - **Auth**:
-     - `POST /api/auth/register` (JSON: `{ "email": "user@example.com", "password": "password" }`)
-     - `POST /api/auth/login` (Form Data: `username=user@example.com`, `password=password`) -> Returns `access_token`
-   - **Create URL** (Requires Auth):
-     - `POST /api/urls` (Header: `Authorization: Bearer <token>`, JSON: `{ "long_url": "https://example.com" }`)
-   - **Redirect**: `GET /{short_code}`
-   - **Stats**: `GET /api/urls/{short_code}/stats` (Requires Auth for some logic or open? Currently open but usually protected)
-
-## Testing Steps (Manual)
-
-### 1. Register and Login
-```bash
-curl -X POST "http://localhost:8010/api/auth/register" -H "Content-Type: application/json" -d "{\"email\": \"test@test.com\", \"password\": \"secret\"}"
-curl -X POST "http://localhost:8010/api/auth/login" -d "username=test@test.com&password=secret"
-# OR via JSON:
-curl -X POST "http://localhost:8010/api/auth/login-json" -H "Content-Type: application/json" -d "{\"email\": \"test@test.com\", \"password\": \"secret\"}"
-# Save the access token
-
-```
-
-### 2. Create URL
-```bash
-curl -X POST "http://localhost:8010/api/urls" -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" -d "{\"long_url\": \"https://google.com\"}"
-```
-
-### 3. Redirect
-Open `http://localhost:8010/{short_code}` in browser or use curl:
-```bash
-curl -I http://localhost:8010/{short_code}
-```
-
-### 4. Stats
-```bash
-curl http://localhost:8010/api/urls/{short_code}/stats
-```
-
-## Database Migrations (Manual)
-
-To apply database schema changes, run migrations in order:
-
-### Initial Setup (Run Once)
-
-**Migration 0001: Users and Basic Limits**
-```bash
-# PowerShell/Windows:
+# 2. Run migrations (first time only)
 Get-Content docs/migrations/0001_users_limits.sql | docker compose exec -T db psql -U shortener_user -d shortener
-
-# Linux/Mac:
-docker compose exec -T db psql -U shortener_user -d shortener < docs/migrations/0001_users_limits.sql
-```
-
-**Migration 0002: User Tracking (REQUIRED for MVP)**
-```bash
-# PowerShell/Windows:
 Get-Content docs/migrations/0002_add_user_tracking.sql | docker compose exec -T db psql -U shortener_user -d shortener
 
-# Linux/Mac:
-docker compose exec -T db psql -U shortener_user -d shortener < docs/migrations/0002_add_user_tracking.sql
-```
-
-### Verify Schema
-```bash
-docker compose exec -T db psql -U shortener_user -d shortener -c "\d+ urls"
-```
-
----
-
-## DB Contract (MVP)
-
-The application **requires** the following columns in the `urls` table to function correctly:
-
-| Column | Type | Default | Purpose |
-|--------|------|---------|---------|
-| `user_email` | VARCHAR | NULL | Associates URLs with users (logical FK) |
-| `click_count` | INTEGER | 0 | Tracks total clicks for each URL |
-| `click_limit` | INTEGER | 1000 | Maximum allowed clicks before URL stops redirecting |
-
-### User-URL Relationship
-
-**Important Design Decision:**
-
-The relationship between **User** and **URL** is established through **email** (logical foreign key), not through a traditional integer `user_id` foreign key constraint.
-
-- ✅ **Current MVP**: `urls.user_email` references `users.email` (by value, no FK constraint)
-- ⏭️ **Future Phase**: Could migrate to `urls.user_id` with proper `FOREIGN KEY` constraint
-
-**Why this approach?**
-1. **Simplicity**: No JOIN needed for free tier limit queries
-2. **JWT Integration**: JWT `sub` claim already contains user email
-3. **Denormalization**: Acceptable for MVP scale
-4. **Flexibility**: URLs can exist independently (e.g., if user is deleted)
-
-### Critical Columns
-
-These columns **must exist** for the application to work:
-
-- `urls.user_email` - Used by `url_service.py` to enforce free tier limit (3 URLs)
-- `urls.click_count` - Used by `redirect_service.py` to track clicks atomically
-- `urls.click_limit` - Used by `redirect_service.py` to enforce click limits
-- `urls.is_active` - Used by `redirect_service.py` to filter inactive URLs
-
-If any of these columns are missing, you'll see errors like:
-```
-column urls.user_email does not exist
-```
-
-**Solution**: Run migration `0002_add_user_tracking.sql` (see Database Migrations section above).
-
----
-
-## Automated Verification
-
-Run the full test suite to validate everything works:
-
-```bash
+# 3. Verify everything works
 powershell -ExecutionPolicy Bypass -File .\verify.ps1
 ```
 
-**Expected output**: All 8 tests pass
-- ✅ Docker compose up
-- ✅ Backend health
-- ✅ User registration
-- ✅ User login (JWT)
-- ✅ Create 3 URLs (free tier)
-- ✅ 4th URL blocked (403 limit)
-- ✅ Redirect (302)
-- ✅ Stats endpoint
+**Expected**: All 8 tests pass ✅
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Auth | Description | Status Codes |
+|--------|----------|------|-------------|--------------|
+| `GET` | `/api/health` | ❌ | Health check | 200 |
+| `POST` | `/api/auth/register` | ❌ | Create user account | 201, 400 |
+| `POST` | `/api/auth/login-json` | ❌ | Login (JSON body) | 200, 401 |
+| `POST` | `/api/auth/login` | ❌ | Login (form data) | 200, 401 |
+| `GET` | `/api/me` | ✅ | Get current user info | 200, 401 |
+| `POST` | `/api/urls` | ✅ | Create short URL | 201, 401, 403, 422 |
+| `GET` | `/{short_code}` | ❌ | Redirect to long URL | 302, 404 |
+| `GET` | `/api/urls/{short_code}/stats` | ❌ | Get click statistics | 200, 404 |
+
+**Notes**:
+- ✅ = Requires `Authorization: Bearer <token>` header
+- Free tier: 3 active URLs per user
+- Click limit: 1000 per URL (default)
+
+---
+
+## Request/Response Examples
+
+### Register
+
+**PowerShell**:
+```powershell
+$body = @{
+    email = "demo@test.local"
+    password = "SecurePass123!"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:8010/api/auth/register" `
+    -Method POST -ContentType "application/json" -Body $body
+```
+
+**curl**:
+```bash
+curl -X POST "http://localhost:8010/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@test.local","password":"SecurePass123!"}'
+```
+
+**Response** (201):
+```json
+{
+  "id": 1,
+  "email": "demo@test.local",
+  "is_active": true,
+  "plan": "free",
+  "created_at": "2026-01-09T19:00:00"
+}
+```
+
+---
+
+### Login
+
+**PowerShell**:
+```powershell
+$body = @{
+    email = "demo@test.local"
+    password = "SecurePass123!"
+} | ConvertTo-Json
+
+$auth = Invoke-RestMethod -Uri "http://localhost:8010/api/auth/login-json" `
+    -Method POST -ContentType "application/json" -Body $body
+$token = $auth.access_token
+```
+
+**curl**:
+```bash
+curl -X POST "http://localhost:8010/api/auth/login-json" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@test.local","password":"SecurePass123!"}' \
+  | jq -r '.access_token'
+```
+
+**Response** (200):
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+---
+
+### Create Short URL
+
+**PowerShell**:
+```powershell
+$headers = @{ Authorization = "Bearer $token" }
+$body = @{ long_url = "https://example.com" } | ConvertTo-Json
+
+$url = Invoke-RestMethod -Uri "http://localhost:8010/api/urls" `
+    -Method POST -Headers $headers -ContentType "application/json" -Body $body
+$shortCode = $url.short_code
+```
+
+**curl**:
+```bash
+curl -X POST "http://localhost:8010/api/urls" \
+  -H "Authorization: Bearer $token" \
+  -H "Content-Type: application/json" \
+  -d '{"long_url":"https://example.com"}'
+```
+
+**Response** (201):
+```json
+{
+  "id": 1,
+  "short_code": "a",
+  "long_url": "https://example.com",
+  "created_at": "2026-01-09T19:00:00",
+  "expires_at": null,
+  "is_active": true
+}
+```
+
+**Error** (403 - 4th URL on free tier):
+```json
+{
+  "detail": "Free plan limit reached (max 3 active URLs)"
+}
+```
+
+---
+
+### Redirect
+
+**PowerShell**:
+```powershell
+# Using HttpClient to avoid auto-redirect
+Add-Type -AssemblyName System.Net.Http
+$handler = New-Object System.Net.Http.HttpClientHandler
+$handler.AllowAutoRedirect = $false
+$client = New-Object System.Net.Http.HttpClient($handler)
+
+$response = $client.GetAsync("http://localhost:8010/$shortCode").Result
+[int]$response.StatusCode  # 302
+$response.Headers.GetValues("Location") | Select-Object -First 1  # https://example.com
+```
+
+**curl**:
+```bash
+curl -I "http://localhost:8010/$shortCode"
+# HTTP/1.1 302 Found
+# Location: https://example.com
+```
+
+---
+
+### Stats
+
+**PowerShell**:
+```powershell
+$stats = Invoke-RestMethod -Uri "http://localhost:8010/api/urls/$shortCode/stats"
+$stats.total_clicks  # 1
+```
+
+**curl**:
+```bash
+curl "http://localhost:8010/api/urls/$shortCode/stats"
+```
+
+**Response** (200):
+```json
+{
+  "url": {
+    "id": 1,
+    "short_code": "a",
+    "long_url": "https://example.com",
+    "created_at": "2026-01-09T19:00:00",
+    "expires_at": null,
+    "is_active": true
+  },
+  "total_clicks": 1,
+  "by_date": [
+    {"date": "2026-01-09", "clicks": 1}
+  ]
+}
+```
+
+---
+
+## Architecture
+
+```mermaid
+graph LR
+    Client[Client] -->|HTTP| Backend[FastAPI Backend<br/>port 8010]
+    Backend -->|SQL| DB[(PostgreSQL<br/>port 5433)]
+    
+    style Backend fill:#86efac
+    style DB fill:#fca5a5
+```
+
+**Components**:
+- **FastAPI** (Python 3.11): API + JWT auth + business logic
+- **PostgreSQL** (16-alpine): User accounts, URLs, click tracking
+- **Nginx** (optional): Proxy with rate limiting (tests hit backend directly)
+
+**Data Flow**:
+1. User registers → JWT token issued
+2. User creates URL → `short_code` generated (base62 of ID)
+3. Visitor accesses `/{short_code}` → 302 redirect + click logged
+4. User checks `/api/urls/{short_code}/stats` → aggregated analytics
+
+---
+
+## MVP Decisions
+
+### Why No Redis/Workers/Background Jobs?
+
+MVP simplicity. Click tracking uses:
+- **Atomic SQL**: `UPDATE urls SET click_count = click_count + 1 WHERE ...` (race-safe)
+- **Direct inserts**: Click details saved synchronously in `clicks` table
+
+Trade-off: Slight latency on redirects (~10ms) for write consistency. Acceptable for MVP scale.
+
+---
+
+### Why `user_email` Instead of Foreign Key?
+
+The `urls.user_email` column stores email as VARCHAR (no FK constraint to `users.id`).
+
+**Rationale**:
+- JWT `sub` claim already contains email → no extra lookup
+- Simplifies free tier query: `SELECT COUNT(*) WHERE user_email = ? AND is_active = TRUE`
+- Allows orphaned URLs if user deleted (soft relationship)
+
+Trade-off: Denormalization. Future can migrate to `user_id` FK if needed.
+
+---
+
+### Why PowerShell verify.ps1?
+
+Windows-friendly E2E testing without external tools (pytest, newman).
+
+**Covers**:
+1. ✅ Docker compose orchestration
+2. ✅ Health checks + retries
+3. ✅ Full auth flow (register → login → JWT)
+4. ✅ Free tier enforcement (3 URL limit)
+5. ✅ Redirect validation (302 + Location header)
+6. ✅ Click tracking + stats
+
+Alternative: `curl` scripts work but require manual parsing. PowerShell provides structured JSON handling out-of-the-box.
+
+---
+
+## Database Migrations
+
+**Required setup** (first time only):
+
+```powershell
+# Migration 1: Users + basic limits
+Get-Content docs/migrations/0001_users_limits.sql | `
+  docker compose exec -T db psql -U shortener_user -d shortener
+
+# Migration 2: User email tracking (CRITICAL)
+Get-Content docs/migrations/0002_add_user_tracking.sql | `
+  docker compose exec -T db psql -U shortener_user -d shortener
+```
+
+**Verify schema**:
+```powershell
+docker compose exec -T db psql -U shortener_user -d shortener -c "\d+ urls"
+# Confirm: user_email, click_count, click_limit columns exist
+```
+
+---
+
+## Rate Limiting (Nginx)
+
+Configured in `nginx/nginx.conf`:
+
+| Endpoint | Limit | Burst |
+|----------|-------|-------|
+| `POST /api/urls` | 1 req/sec | 3 |
+| All others | 10 req/sec | 20 |
+
+**Response when exceeded**: HTTP 503
+
+**Note**: `verify.ps1` hits backend directly (port 8010) to bypass Nginx for testing.
+
+---
+
+## Testing
+
+See full testing documentation: [docs/testing.md](docs/testing.md)
+
+**Automated tests**:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\verify.ps1
+```
+
+**Manual API examples**: [docs/api.md](docs/api.md)
+
+---
+
+## Project Structure
+
+```
+repo/
+├── backend/
+│   ├── app/
+│   │   ├── routers/          # API endpoints
+│   │   ├── services/         # Business logic
+│   │   ├── models.py         # SQLAlchemy ORM
+│   │   ├── schemas.py        # Pydantic validation
+│   │   └── main.py           # FastAPI app
+│   ├── Dockerfile
+│   └── requirements.txt
+├── nginx/
+│   └── nginx.conf            # Reverse proxy + rate limits
+├── docs/
+│   ├── migrations/           # SQL migration scripts
+│   ├── testing.md            # Test documentation
+│   └── api.md                # API examples
+├── docker-compose.yml
+├── verify.ps1                # Automated E2E tests
+└── README.md
+```
+
+---
+
+## Environment Variables
+
+Defined in `.env`:
+
+```bash
+# Database
+DB_NAME=shortener
+DB_USER=shortener_user
+DB_PASSWORD=shortener_pass_123
+
+# Security
+SECRET_KEY=super_secret_key_for_dev_only  # CHANGE IN PRODUCTION
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+---
+
+## API Documentation
+
+- **Swagger UI**: http://localhost:8010/docs
+- **ReDoc**: http://localhost:8010/redoc

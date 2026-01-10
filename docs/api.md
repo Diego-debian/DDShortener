@@ -186,7 +186,7 @@ curl -H "Authorization: Bearer $TOKEN" "http://localhost:8010/api/me"
 
 **Requires**: `Authorization: Bearer <token>`
 
-**Note**: The required field is `long_url`. Do not use `original_url` or `url`.
+**Note**: The required field is `long_url`. The backend strictly validates this field name.
 
 **PowerShell**:
 ```powershell

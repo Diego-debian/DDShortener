@@ -240,7 +240,9 @@ password=secret
 3. ✅ No expirada (`expires_at > now` o `null`)
 4. ✅ Click count < click limit
 
-**Criterio de Errores**: Si falla **CUALQUIERA** de las condiciones anteriores (URL no existe, inactiva, expirada o límite alcanzado), la API responde invariablemente con **HTTP 404 Not Found**. No se diferencia entre "no existe" y "límite alcanzado" (no hay 410 ni 403 en este endpoint).
+**Criterio de Errores**:
+- **HTTP 404 Not Found**: URL no existe o está inactiva (`is_active = false`)
+- **HTTP 410 Gone**: URL expirada (`expires_at` pasado) o límite de clicks alcanzado (`click_count >= click_limit`)
 
 ---
 
@@ -535,12 +537,12 @@ sequenceDiagram
     Note over N: Rate limit: 10r/s
     N->>B: Forward request
     B->>D: SELECT * FROM urls WHERE short_code='3D7'
-    alt URL not found OR inactive OR expired
+    alt URL not found OR inactive
         B-->>C: 404 Not Found
     else URL valid
         B->>D: UPDATE urls SET click_count=click_count+1<br/>WHERE id=? AND click_count < click_limit
-        alt Update affected 0 rows (limit reached)
-            B-->>C: 404 Not Found
+        alt Update affected 0 rows (expired or limit reached)
+            B-->>C: 410 Gone
         else Update OK
             B->>D: INSERT INTO clicks (url_id, event_time, ...)
             B-->>C: 302 Redirect<br/>Location: https://example.com
@@ -554,7 +556,6 @@ sequenceDiagram
 
 ### Patrón de Capas
 
-```
 main.py
   ↓ include_router()
 routers/
@@ -566,7 +567,6 @@ models.py + schemas.py
 database.py
   ↓ AsyncSession
 PostgreSQL
-```
 
 ### Separación de Responsabilidades
 
@@ -738,7 +738,6 @@ WHERE id = ? AND click_count < click_limit
 
 ## 🗂️ Estructura de Archivos
 
-```
 repo/
 ├── backend/
 │   ├── Dockerfile
@@ -776,7 +775,6 @@ repo/
 ├── .env.example
 ├── verify.ps1                   # E2E tests
 └── README.md
-```
 
 ---
 

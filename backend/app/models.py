@@ -1,4 +1,4 @@
-"""Database models for the URL shortener MVP."""
+"""Database models for users, URLs, and click tracking."""
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
@@ -17,7 +17,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # No ORM relationship to URLs - using explicit queries with user_email
+    # We skip the ORM relationship and query URLs by user_email instead
 
 
 
@@ -35,7 +35,7 @@ class URL(Base):
     click_limit = Column(Integer, default=1000)
 
     clicks = relationship("Click", back_populates="url")
-    # No ORM relationship to User - using explicit queries with user_email
+    # No ORM relationship back to User, we use user_email directly
 
 
 class Click(Base):

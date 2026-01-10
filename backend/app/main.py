@@ -1,6 +1,6 @@
-"""FastAPI entry point for the URL shortener MVP."""
+"""Main FastAPI application entry point."""
 
-# Imports are now mostly in routers
+# Most imports live in their respective routers
 from fastapi import FastAPI
 from .database import engine
 from .models import Base
@@ -17,12 +17,12 @@ app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(urls.router)
 
-# Mount static files directory (before redirect router)
+# Serve static files (needs to be before the redirect router)
 from pathlib import Path
 static_dir = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-# Custom offline ReDoc endpoint (before redirect router)
+# Offline ReDoc documentation (must come before redirect router)
 @app.get("/redoc", response_class=HTMLResponse, include_in_schema=False)
 async def redoc_html():
     return """
@@ -40,7 +40,7 @@ async def redoc_html():
     </html>
     """
 
-# Redirect router must be last (catches all /{short_code})
+# Redirect router comes last since it matches any /{short_code}
 app.include_router(redirect.router)
 
 
@@ -48,7 +48,7 @@ app.include_router(redirect.router)
 
 @app.on_event("startup")
 async def startup_event():
-    # Create tables if they do not exist. In production use Alembic migrations.
+    # Auto-create tables on startup. Use Alembic for production.
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

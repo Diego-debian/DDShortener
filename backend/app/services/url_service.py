@@ -1,4 +1,4 @@
-"""Service for managing URLs."""
+"""URL creation and free tier validation."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import URL, User
 from ..schemas import URLCreate
@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from sqlalchemy import select, func
 
 async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> URL:
-    # Check limit for free plan
+    # Free users can only have 3 active URLs
     if user.plan == "free":
         result = await session.execute(
             select(func.count(URL.id)).where(URL.user_email == user.email, URL.is_active == True)
@@ -17,7 +17,7 @@ async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> UR
         if count >= 3:
             raise HTTPException(status_code=403, detail="Free plan limit reached (max 3 active URLs)")
 
-    # Create URL entry without short_code
+    # Create the URL record first to get an auto-generated ID
     new_url = URL(
         long_url=str(url_in.long_url),
         expires_at=url_in.expires_at,
@@ -29,7 +29,7 @@ async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> UR
     await session.commit()
     await session.refresh(new_url)
 
-    # Generate short code from the auto-generated ID
+    # Turn the numeric ID into a short base62 code
     short_code = encode_base62(new_url.id)
     new_url.short_code = short_code
     await session.commit()

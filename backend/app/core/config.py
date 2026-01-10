@@ -1,6 +1,6 @@
 import os
 
-# Database settings
+# Database connection settings
 DB_USER = os.getenv("DB_USER", "shortener_user")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "change_me")
 DB_HOST = os.getenv("DB_HOST", "db")
@@ -11,7 +11,7 @@ DATABASE_URL = (
     f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
-# Security
+# JWT and auth settings
 SECRET_KEY = os.getenv("SECRET_KEY", "super_secret_key_for_dev_only")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 ALGORITHM = "HS256"

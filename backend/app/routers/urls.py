@@ -18,7 +18,7 @@ async def create_url(
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ) -> URLInfo:
-    """Create a new shortened URL."""
+    """Generate a short URL for the authenticated user."""
     new_url = await url_service.create_url(session, url_in, current_user)
     return URLInfo.model_validate(new_url)
 
@@ -27,5 +27,5 @@ async def create_url(
 async def url_stats(
     short_code: str, session: AsyncSession = Depends(get_session)
 ) -> URLStats:
-    """Return aggregated click statistics for a given short URL."""
+    """Get click stats grouped by date for a short URL."""
     return await stats_service.get_stats(session, short_code)

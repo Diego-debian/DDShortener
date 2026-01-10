@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import URL, Click
 
 async def get_redirect(session: AsyncSession, short_code: str, referrer: str | None, user_agent: str | None) -> str:
-    # Atomic update and fetch.
+    # Try to increment the click counter atomically while checking all conditions
     stmt = (
         update(URL)
         .where(URL.short_code == short_code)
@@ -20,8 +20,7 @@ async def get_redirect(session: AsyncSession, short_code: str, referrer: str | N
     row = result.first()
     
     if not row:
-        # Check why it failed: Not Found/Expired or Limit Reached?
-        # Read-only query to give specific error
+        # Figure out why the redirect failed and return a specific error
         q = await session.execute(select(URL).where(URL.short_code == short_code))
         url = q.scalar_one_or_none()
         
@@ -34,13 +33,13 @@ async def get_redirect(session: AsyncSession, short_code: str, referrer: str | N
         if url.click_count >= url.click_limit:
             raise HTTPException(status_code=410, detail="Click limit reached")
         
-        # Fallback
+        # Something unexpected happened
         raise HTTPException(status_code=404, detail="Short URL not found")
 
     long_url, url_id = row
     await session.commit()
 
-    # Record click details
+    # Save the analytics event for this click
     click = Click(
         url_id=url_id,
         referrer=referrer,

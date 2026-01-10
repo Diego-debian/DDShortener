@@ -1,4 +1,4 @@
-"""Service for retrieving statistics."""
+"""Click analytics and statistics."""
 from fastapi import HTTPException
 from sqlalchemy import select, func, cast, Date as SQLDate
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,7 +6,7 @@ from ..models import URL, Click
 from ..schemas import URLStats, URLInfo, ClickAggregate
 
 async def get_stats(session: AsyncSession, short_code: str) -> URLStats:
-    # Fetch the URL
+    # Look up the URL first
     result = await session.execute(
         select(URL).where(URL.short_code == short_code)
     )
@@ -14,10 +14,10 @@ async def get_stats(session: AsyncSession, short_code: str) -> URLStats:
     if url is None:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
-    # Total clicks from the URL table (fast)
+    # We already have the count cached on the URL row
     total_clicks = url.click_count
 
-    # Clicks grouped by date
+    # Aggregate clicks by day
     group_result = await session.execute(
         select(
             cast(Click.event_time, SQLDate).label("date"),

@@ -1,4 +1,4 @@
-"""Authentication router."""
+"""User authentication and JWT endpoints."""
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status

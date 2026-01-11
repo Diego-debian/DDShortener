@@ -82,9 +82,14 @@ export default function Home() {
                     Si te resulta útil, puedes apoyar su desarrollo y los costos del servidor con una donación voluntaria.
                 </p>
                 <div className="flex justify-center gap-4">
-                    <button disabled className="bg-gray-300 text-gray-500 px-4 py-2 rounded cursor-not-allowed">
-                        Donar (próximamente)
-                    </button>
+                    <a
+                        href="https://www.paypal.com/donate/?business=profediegoparra01@gmail.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                    >
+                        Donar por PayPal
+                    </a>
                     <button disabled className="bg-gray-300 text-gray-500 px-4 py-2 rounded cursor-not-allowed">
                         Donar (próximamente)
                     </button>

@@ -72,6 +72,15 @@ export default function About() {
                         Correo temporal durante la fase beta.
                         <br />
                         Donaciones voluntarias disponibles próximamente.
+                        <br />
+                        <a
+                            href="https://www.paypal.com/donate/?business=profediegoparra01@gmail.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block mt-2 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                        >
+                            Donar por PayPal
+                        </a>
                     </p>
                 </div>
             </div>

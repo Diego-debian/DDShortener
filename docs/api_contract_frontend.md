@@ -97,6 +97,105 @@ Create a new user account.
 
 ---
 
+## URL Management
+
+### Create Short URL
+
+Create a new shortened URL.
+
+**Endpoint**: `POST /api/urls`
+
+**Headers**:
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request**:
+```json
+{
+  "long_url": "https://example.com/very/long/url/path"
+}
+```
+
+**Success Response** (201 Created):
+```json
+{
+  "short_code": "abc123",
+  "long_url": "https://example.com/very/long/url/path",
+  "created_at": "2026-01-11T05:00:00.000Z",
+  "expires_at": null,
+  "is_active": true
+}
+```
+
+**Note**: The frontend constructs the full short URL using:
+```typescript
+const shortUrl = `${window.location.origin}/${short_code}`;
+```
+
+**Error Responses**:
+- `401 Unauthorized`: Invalid or missing token
+  ```json
+  { "detail": "Could not validate credentials" }
+  ```
+- `403 Forbidden`: Free plan limit reached
+  ```json
+  { "detail": "Free plan limit: You can only create up to 3 URLs" }
+  ```
+- `422 Unprocessable Entity`: Invalid URL format
+  ```json
+  {
+    "detail": [
+      {
+        "loc": ["body", "long_url"],
+        "msg": "invalid or missing URL scheme",
+        "type": "value_error.url.scheme"
+      }
+    ]
+  }
+  ```
+
+---
+
+### Get URL Statistics
+
+Retrieve click statistics for a shortened URL.
+
+**Endpoint**: `GET /api/urls/{short_code}/stats`
+
+**Path Parameters**:
+- `short_code` - The short code of the URL
+
+**Success Response** (200 OK):
+```json
+{
+  "short_code": "abc123",
+  "long_url": "https://example.com/very/long/url/path",
+  "total_clicks": 42,
+  "by_date": {
+    "2026-01-10": 15,
+    "2026-01-11": 27
+  }
+}
+```
+
+**Error Responses**:
+- `404 Not Found`: URL not found or inactive
+  ```json
+  { "detail": "Short URL not found" }
+  ```
+- `410 Gone`: URL expired or click limit reached
+  ```json
+  { "detail": "Short URL has expired or reached its click limit" }
+  ```
+- `422 Unprocessable Entity`: Invalid short code format
+  ```json
+  { "detail": "Invalid short code format" }
+  ```
+
+---
+
 ## User Management
 
 ### Get Current User

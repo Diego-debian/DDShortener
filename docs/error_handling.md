@@ -89,6 +89,69 @@ Protected routes: "Session expired. Please log in again."
 
 ---
 
+### URL Management Errors
+
+#### 403 Forbidden
+
+**Scenario**: Free plan limit reached
+
+**Backend Response**:
+```json
+{ "detail": "Free plan limit: You can only create up to 3 URLs" }
+```
+
+**Frontend Behavior**:
+- Display exact detail from backend
+- Suggest upgrading plan (future feature)
+
+**UI Message**:
+```
+"Free plan limit: You can only create up to 3 URLs"
+// Exact detail from backend
+```
+
+---
+
+#### 404 Not Found
+
+**Scenario**: Short URL not found or inactive
+
+**Backend Response**:
+```json
+{ "detail": "Short URL not found" }
+```
+
+**Frontend Behavior**:
+- Display clear "not found" state
+- Offer navigation back to dashboard
+
+**UI Message**:
+```
+"URL not found or inactive"
+```
+
+---
+
+#### 410 Gone
+
+**Scenario**: URL expired or click limit reached
+
+**Backend Response**:
+```json
+{ "detail": "Short URL has expired or reached its click limit" }
+```
+
+**Frontend Behavior**:
+- Display "expired" state
+- Clearly indicate URL is no longer accessible
+
+**UI Message**:
+```
+"URL expired or limit reached"
+```
+
+---
+
 ### Conflict Errors
 
 #### 409 Conflict

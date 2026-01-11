@@ -101,28 +101,62 @@ This document describes the user-facing screens in the frontend application, the
 
 **Route**: `/app/dashboard` (**Protected**)
 
-**Purpose**: Main user dashboard for managing URLs
+**Purpose**: Main user dashboard for creating and managing shortened URLs
 
 **Protection**: Requires authentication token
 
-**Features** (Current - Placeholder):
-- Stats cards:
-  - Total URLs
-  - Total Clicks
-  - Active Links
-- URL list section (placeholder)
+**Features**:
+- **URL Creation Form**:
+  - Input: `long_url` (required, type URL)
+  - Client-side validation (required field, URL format)
+  - Loading state during submission
+  - Error display for failed attempts
 
-**Future Features**:
-- Create new short URL form
-- List of user's shortened URLs
-- Click statistics per URL
-- Edit/delete URL actions
+- **Result Card** (appears after successful creation):
+  - Displays: `short_code`, `short_url`, `long_url`, `created_at`, `is_active`
+  - "Copy Link" button (copies short URL to clipboard)
+  - "Open Link" button (opens in new tab)
+  - Success styling (green border/background)
+
+- **Local History List**:
+  - Recent URLs created (stored in localStorage)
+  - Shows up to 50 most recent URLs
+  - Each item displays:
+    - Short code (monospace font)
+    - Original long URL (truncated)
+    - Created date
+  - Actions per item:
+    - **Copy**: Copy short URL to clipboard
+    - **Open**: Open short URL in new tab
+    - **Stats**: Navigate to `/app/stats/:short_code`
+    - **Remove**: Remove from local history only
+
+**API Integration**:
+- **Endpoint**: `POST /api/urls`
+- **On success (201)**: Display result card, add to history, clear form
+- **On error**:
+  - `401`: Clear token, redirect to login
+  - `403`: Show free plan limit banner with exact detail
+  - `422`: Show validation error under input field
+  - `503`: Show "high demand" banner
 
 **User Flow**:
-1. User logs in successfully
-2. Redirected to `/app/dashboard`
-3. If no token: Redirected to login
-4. Displays user's URL management interface
+1. User enters long URL
+2. Clicks "Create Short URL"
+3. If successful: Result card shown, URL added to history
+4. If error: Error message displayed (specific to error type)
+5. User can copy/open/view stats for created URLs
+6. Click "Stats" → Navigate to `/app/stats/:short_code`
+
+**Error States**:
+- **403 Free Plan Limit**: Yellow banner with exact backend detail
+- **422 Validation**: Red border on input + error text below
+- **503 Service Down**: Orange banner with generic message
+
+**Local Storage**:
+- Key: `url_shortener_history`
+- Stores: Array of `{ short_code, long_url, short_url, created_at }`
+- Limit: 50 items (FIFO)
 
 ---
 
@@ -169,24 +203,59 @@ This document describes the user-facing screens in the frontend application, the
 
 **Route**: `/app/stats/:short_code` (Public)
 
-**Purpose**: View detailed statistics for a shortened URL
+**Purpose**: View detailed click statistics for a shortened URL
 
-**Features** (Current - Placeholder):
-- Short code display
-- Stats cards:
-  - Total clicks (overall)
-  - Today's clicks
-  - This week's clicks
-  - This month's clicks
-- Target URL display
-- Recent activity section
+**Features**:
+- **Short Code Info Card**:
+  - Large display of short code (blue, monospace)
+  - Target long URL (readable format)
 
-**Future Features**:
-- Click-through rate graph
-- Geographic distribution map
-- Referrer sources
-- Device/browser breakdown
-- Time-based analytics
+- **Total Clicks Card**:
+  - Large number display (5xl font)
+  - Gradient background (blue)
+  - All-time clicks count
+
+- **Clicks by Date**:
+  - List of dates with click counts
+  - Visual bar chart (relative to max)
+  - Sorted chronologically
+  - Shows individual date + count
+
+- **Quick Actions**:
+  - "Copy Short URL" button
+  - "Open Short URL" button (new tab)
+  - "Back to Dashboard" link
+
+**API Integration**:
+- **Endpoint**: `GET /api/urls/:short_code/stats`
+- **Response**: `{ short_code, long_url, total_clicks, by_date: {date: count} }`
+- **On error**:
+  - `404`: Display "Not Found" state
+  - `410`: Display "Expired" state
+  - `422`: Display "Invalid Code" state
+  - `503`: Display "High demand" message
+
+**Error States**:
+- **404 Not Found**:
+  - Red banner with ❌ icon
+  - Message: "URL not found or inactive"
+  - Shows "Back to Dashboard" and "Retry" buttons
+
+- **410 Gone**:
+  - Red banner with ⏰ icon
+  - Message: "URL expired or limit reached"
+  - Indicates URL no longer accessible
+
+- **422 Invalid**:
+  - Red banner with ⚠️ icon
+  - Message: "Invalid short code format"
+
+**User Flow**:
+1. User navigates to `/app/stats/:short_code` (from dashboard or direct link)
+2. Stats loaded from backend
+3. If found: Display total clicks + date breakdown
+4. If error: Show clear error state with recovery options
+5. User can copy/open short URL directly from stats page
 
 ---
 

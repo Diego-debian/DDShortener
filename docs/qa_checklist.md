@@ -245,6 +245,30 @@ curl http://localhost/app-config/promotions.json
 - [ ] OR changes apply immediately after nginx restart
 - [ ] No frontend rebuild needed
 
+### Cache Verification (MANDATORY)
+
+**Run all 3 curl commands**:
+
+```bash
+# 1. index.html - no caching
+curl -I http://localhost/app/ | grep Cache-Control
+# Expected: Cache-Control: no-store, max-age=0, must-revalidate
+
+# 2. Hashed assets - long cache + immutable
+# Replace XXXXX with actual hash from build output
+curl -I http://localhost/app/assets/index-XXXXX.js | grep Cache-Control
+# Expected: Cache-Control: public, max-age=31536000, immutable
+
+# 3. promotions.json - short cache
+curl -I http://localhost/app-config/promotions.json | grep Cache-Control
+# Expected: Cache-Control: public, max-age=120
+```
+
+- [ ] index.html has no-store cache
+- [ ] Hashed assets have immutable cache (1 year)
+- [ ] promotions.json has short cache (120s)
+- [ ] All cache headers present and correct
+
 ---
 
 ## Regression Tests

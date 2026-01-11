@@ -1,18 +1,65 @@
 {
     "hold_seconds": 10,
-    "mode": "stable",
     "videos": [
-        { "id": "D8IODzKi0Fc", "weight": 1, "title": "Nunca viajaremos a la velocidad de la luz" },
-        { "id": "otX0Ebnqlyk", "weight": 1, "title": "La Voyager tardó 50 años en viajar lo que la luz hace en 1 día" },
-        { "id": "h-Pl3D3gGeI", "weight": 1, "title": "Para la luz, el tiempo no existe (esto es lo que dice la física)" },
-        { "id": "onG7Ys_Twpo", "weight": 1, "title": "El peor error de la historia de la física moderna" },
-        { "id": "8Rs-RE9ybyw", "weight": 1, "title": "El día que el ser humano tocó otro mundo (y regresó)" },
-        { "id": "dam2BthC2Ik", "weight": 1, "title": "El tamaño real de un agujero negro comparado con el Sol" },
-        { "id": "OHYOqT8Zdzg", "weight": 1, "title": "I Found This Message on My Girlfriend’s Phone… | Learn English with Stories" },
-        { "id": "NpGVfoXVsqw", "weight": 1, "title": "My Ex Cheated on Me With My Brother…Then Wanted to Be My Stepmother | Learn English Trought Stories" },
-        { "id": "E9b7HvulDRU", "weight": 1, "title": "He Got Jealous of Ice Cream | A Funny Story to Learn English" },
-        { "id": "VWWv49XJqdc", "weight": 1, "title": "We Met at 17… But Almost Didn’t End Up Together | Learn English Trought Stories" },
-        { "id": "e6KQ6j34o3U", "weight": 0.5, "title": "Front-End Estático para Ferretería: Registro, Login e Integración con n8n | Proyecto Vanilla JS" },
-        { "id": "qEHKy2vacBM", "weight": 0.5, "title": "Breve historia de la astronomía: del fuego prehistórico a las ondas gravitacionales" }
+        {
+            "id": "D8IODzKi0Fc",
+            "weight": 1,
+            "title": "Nunca viajaremos a la velocidad de la luz"
+        },
+        {
+            "id": "otX0Ebnqlyk",
+            "weight": 1,
+            "title": "La Voyager tardó 50 años en viajar lo que la luz hace en 1 día"
+        },
+        {
+            "id": "h-Pl3D3gGeI",
+            "weight": 1,
+            "title": "Para la luz, el tiempo no existe (esto es lo que dice la física)"
+        },
+        {
+            "id": "onG7Ys_Twpo",
+            "weight": 1,
+            "title": "El peor error de la historia de la física moderna"
+        },
+        {
+            "id": "8Rs-RE9ybyw",
+            "weight": 1,
+            "title": "El día que el ser humano tocó otro mundo (y regresó)"
+        },
+        {
+            "id": "dam2BthC2Ik",
+            "weight": 1,
+            "title": "El tamaño real de un agujero negro comparado con el Sol"
+        },
+        {
+            "id": "OHYOqT8Zdzg",
+            "weight": 1,
+            "title": "I Found This Message on My Girlfriend’s Phone… | Learn English with Stories"
+        },
+        {
+            "id": "NpGVfoXVsqw",
+            "weight": 1,
+            "title": "My Ex Cheated on Me With My Brother…Then Wanted to Be My Stepmother | Learn English Trought Stories"
+        },
+        {
+            "id": "E9b7HvulDRU",
+            "weight": 1,
+            "title": "He Got Jealous of Ice Cream | A Funny Story to Learn English"
+        },
+        {
+            "id": "VWWv49XJqdc",
+            "weight": 1,
+            "title": "We Met at 17… But Almost Didn’t End Up Together | Learn English Trought Stories"
+        },
+        {
+            "id": "e6KQ6j34o3U",
+            "weight": 0.5,
+            "title": "Front-End Estático para Ferretería: Registro, Login e Integración con n8n | Proyecto Vanilla JS"
+        },
+        {
+            "id": "qEHKy2vacBM",
+            "weight": 0.5,
+            "title": "Breve historia de la astronomía: del fuego prehistórico a las ondas gravitacionales"
+        }
     ]
 }

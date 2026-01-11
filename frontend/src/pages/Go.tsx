@@ -92,21 +92,22 @@ export default function Go() {
 
                 // Select video if available
                 if (data.videos && data.videos.length > 0) {
-                    console.debug('[Go] Selection mode:', data.mode || 'stable');
+                    const mode = data.mode || 'random';
+                    console.debug('[Go] Selection mode:', mode);
                     let newSelectedId: string | null = null;
 
-                    if (data.mode === 'random') {
-                        // Weighted random selection
-                        newSelectedId = selectWeightedRandomVideo(data.videos);
-                        console.debug('[Go] Randomly selected video:', newSelectedId);
-                    } else {
-                        // Stable selection (default)
+                    if (mode === 'stable') {
+                        // Stable selection (explicitly requested)
                         const validVideos = data.videos.filter(v => VIDEO_ID_REGEX.test(v.id));
                         if (validVideos.length > 0) {
                             const index = hashShortCode(short_code) % validVideos.length;
                             newSelectedId = validVideos[index].id;
                             console.debug('[Go] Stably selected video:', newSelectedId);
                         }
+                    } else {
+                        // Weighted random selection (default)
+                        newSelectedId = selectWeightedRandomVideo(data.videos);
+                        console.debug('[Go] Randomly selected video:', newSelectedId);
                     }
 
                     if (newSelectedId) {

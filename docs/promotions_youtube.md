@@ -36,7 +36,7 @@ The URL shortener supports showing promotional YouTube videos before redirecting
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `hold_seconds` | number | Yes | Countdown duration in seconds (minimum 0, recommended 3-10) |
-| `mode` | string | No | Selection mode: "stable" (default) or "random" |
+| `mode` | string | No | Selection mode: "random" (default) or "stable" |
 | `videos` | array | Yes | List of YouTube videos to show (can be empty) |
 | `videos[].id` | string | Yes | YouTube video ID (exactly 11 characters) |
 | `videos[].weight` | number | Yes | Weight for video selection (currently all videos have equal chance) |
@@ -117,13 +117,13 @@ https://youtube.com/shorts/dQw4w9WgXcQ
 
 ## Video Selection Algorithm
 
-**Stable Selection (Default)**: The same `short_code` always shows the same video.
-- **Config**: `"mode": "stable"` (or omit mode)
+**Stable Selection**: The same `short_code` always shows the same video.
+- **Config**: `"mode": "stable"`
 - **Algorithm**: `hash(short_code) % videos.length`
 - **Rationale**: Consistent user experience.
 
-**Random Selection**: Videos are selected randomly weighted by their `weight` property.
-- **Config**: `"mode": "random"`
+**Random Selection (Default)**: Videos are selected randomly weighted by their `weight` property.
+- **Config**: `"mode": "random"` (or omit mode)
 - **Algorithm**: Weighted random selection.
   - Video with `weight: 2` appears twice as often as `weight: 1`.
   - Selection is recalculated on every page load (refreshing changes video).
@@ -216,7 +216,7 @@ curl -I http://localhost/app-config/promotions.json | grep Cache-Control
 2. Link directs to `/app/go/:short_code`
 3. Frontend validates `short_code`
 4. Frontend fetches `/app-config/promotions.json`
-5. Frontend selects video (if available) based on `short_code` hash
+5. Frontend selects video (if available) using weighted random selection (default) or stable hash
 6. Frontend displays:
    - YouTube embed (if video available and valid)
    - Countdown timer

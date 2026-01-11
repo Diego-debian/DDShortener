@@ -29,14 +29,24 @@ function hashShortCode(code: string): number {
     return Math.abs(hash);
 }
 
+// Normalize hold_seconds to a valid positive integer
+function normalizeHoldSeconds(value: unknown): number {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed) && parsed >= 1) {
+        return Math.floor(parsed);
+    }
+    return DEFAULT_HOLD_SECONDS;
+}
+
 export default function Go() {
     const { short_code } = useParams<{ short_code: string }>();
-    const [countdown, setCountdown] = useState<number>(DEFAULT_HOLD_SECONDS);
+    const [secondsLeft, setSecondsLeft] = useState<number>(DEFAULT_HOLD_SECONDS);
     const [totalSeconds, setTotalSeconds] = useState<number>(DEFAULT_HOLD_SECONDS);
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
     const [isValidShortCode, setIsValidShortCode] = useState<boolean>(true);
     const [configLoaded, setConfigLoaded] = useState<boolean>(false);
-    const timerStartedRef = useRef<boolean>(false);
+    const hasRedirectedRef = useRef<boolean>(false);
+    const countdownStartedRef = useRef<boolean>(false);
 
     // Validate short_code on mount
     useEffect(() => {
@@ -55,16 +65,20 @@ export default function Go() {
                 return response.json();
             })
             .then((data: PromotionsConfig) => {
-                // Set hold_seconds from config
-                const holdSeconds = data.hold_seconds || DEFAULT_HOLD_SECONDS;
+                // Normalize and set hold_seconds from config
+                const holdSeconds = normalizeHoldSeconds(data.hold_seconds);
+                console.debug('[Go] Config loaded, hold_seconds raw:', data.hold_seconds, '-> normalized:', holdSeconds);
+
                 setTotalSeconds(holdSeconds);
-                if (!timerStartedRef.current) {
-                    setCountdown(holdSeconds);
+                // Only update countdown if timer hasn't started yet
+                if (!countdownStartedRef.current) {
+                    setSecondsLeft(holdSeconds);
                 }
 
                 // Select video if available
                 if (data.videos && data.videos.length > 0) {
                     const validVideos = data.videos.filter(v => VIDEO_ID_REGEX.test(v.id));
+                    console.debug('[Go] Valid videos:', validVideos.length, 'of', data.videos.length);
                     if (validVideos.length > 0) {
                         const index = hashShortCode(short_code) % validVideos.length;
                         setSelectedVideo(validVideos[index].id);
@@ -73,7 +87,7 @@ export default function Go() {
                 setConfigLoaded(true);
             })
             .catch(err => {
-                console.warn('Failed to load promotions config, using fallback:', err.message);
+                console.warn('[Go] Failed to load promotions config, using fallback:', err.message);
                 // Use fallback videos
                 if (FALLBACK_VIDEOS.length > 0) {
                     const index = hashShortCode(short_code) % FALLBACK_VIDEOS.length;
@@ -83,25 +97,33 @@ export default function Go() {
             });
     }, [short_code, isValidShortCode]);
 
-    // Start countdown timer (runs regardless of config load status)
+    // Countdown timer with setInterval - starts immediately on mount
     useEffect(() => {
-        if (!isValidShortCode) return;
+        if (!isValidShortCode || !short_code) return;
 
-        // Start timer immediately
-        timerStartedRef.current = true;
+        countdownStartedRef.current = true;
 
-        if (countdown <= 0) {
-            // Redirect to backend short URL (NOT React Router navigate)
-            window.location.href = `/${short_code}`;
-            return;
-        }
+        const intervalId = setInterval(() => {
+            setSecondsLeft(prev => {
+                const next = prev - 1;
+                console.debug('[Go] Countdown tick:', prev, '->', next);
 
-        const timer = setTimeout(() => {
-            setCountdown(c => c - 1);
+                // Redirect when reaching 0
+                if (next <= 0 && !hasRedirectedRef.current) {
+                    hasRedirectedRef.current = true;
+                    console.debug('[Go] Redirecting to:', `/${short_code}`);
+                    // Use setTimeout to ensure state update completes
+                    setTimeout(() => {
+                        window.location.href = `/${short_code}`;
+                    }, 100);
+                }
+
+                return Math.max(0, next);
+            });
         }, 1000);
 
-        return () => clearTimeout(timer);
-    }, [countdown, short_code, isValidShortCode]);
+        return () => clearInterval(intervalId);
+    }, [short_code, isValidShortCode]);
 
     const handleOpenYouTube = () => {
         if (!selectedVideo) return;
@@ -109,7 +131,7 @@ export default function Go() {
     };
 
     // Calculate progress percentage
-    const progressPercent = totalSeconds > 0 ? ((totalSeconds - countdown) / totalSeconds) * 100 : 0;
+    const progressPercent = totalSeconds > 0 ? ((totalSeconds - secondsLeft) / totalSeconds) * 100 : 0;
 
     if (!isValidShortCode) {
         return (
@@ -141,7 +163,7 @@ export default function Go() {
                 {/* Header */}
                 <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white text-center">
                     <h1 className="text-2xl font-bold mb-2">
-                        {countdown > 0 ? `Redirigiendo en ${countdown} segundos...` : 'Redirigiendo...'}
+                        {secondsLeft > 0 ? `Redirigiendo en ${secondsLeft} segundos...` : 'Redirigiendo...'}
                     </h1>
                     <p className="text-purple-100">
                         Mientras tanto, mira este short del creador del proyecto.

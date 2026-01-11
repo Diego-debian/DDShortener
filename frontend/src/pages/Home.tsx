@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function Home() {
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
+        <div className="max-w-3xl mx-auto space-y-8 py-8">
             {/* Header */}
             <div className="text-center space-y-4">
                 <h1 className="text-4xl font-bold text-gray-900">DD Shortener (Beta)</h1>
@@ -19,13 +19,13 @@ export default function Home() {
             {/* CTAs */}
             <div className="flex justify-center gap-4">
                 <Link
-                    to="/register"
+                    to="register"
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                     Registrarme
                 </Link>
                 <Link
-                    to="/login"
+                    to="login"
                     className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
                 >
                     Iniciar Sesión

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { apiFetch, ApiError } from '../lib/apiFetch';
+import Toast, { type ToastProps } from '../components/Toast';
 
 interface StatsResponse {
     short_code: string;
@@ -15,6 +16,7 @@ export default function Stats() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [errorType, setErrorType] = useState<'not_found' | 'expired' | 'invalid' | 'other'>('other');
+    const [toast, setToast] = useState<Omit<ToastProps, 'onClose'> | null>(null);
 
     useEffect(() => {
         if (short_code) {
@@ -171,9 +173,9 @@ export default function Stats() {
                     onClick={() => {
                         const shortUrl = `${window.location.origin}/${stats.short_code}`;
                         navigator.clipboard.writeText(shortUrl).then(() => {
-                            alert('Short URL copied to clipboard!');
+                            setToast({ message: 'Short URL copied!', type: 'success' });
                         }).catch(() => {
-                            alert(`Copy this URL: ${shortUrl}`);
+                            setToast({ message: 'Failed to copy. Please copy manually.', type: 'error' });
                         });
                     }}
                     className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
@@ -189,6 +191,15 @@ export default function Stats() {
                     Open Short URL
                 </button>
             </div>
+
+            {/* Toast Notification */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

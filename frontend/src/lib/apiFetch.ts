@@ -80,7 +80,29 @@ export async function apiFetch<T = any>(
         if (contentType?.includes('application/json')) {
             try {
                 const errorData = await response.json();
-                const message = errorData.detail || errorData.message || 'An error occurred';
+
+                // Parse detail intelligently (handle arrays from FastAPI validation)
+                let message: string;
+
+                if (Array.isArray(errorData.detail)) {
+                    // FastAPI validation error: extract first error message
+                    const firstError = errorData.detail[0];
+                    if (firstError && typeof firstError === 'object' && 'msg' in firstError) {
+                        message = firstError.msg;
+                    } else {
+                        message = 'Validation error. Please check your input.';
+                    }
+                } else if (typeof errorData.detail === 'string') {
+                    // Simple string message
+                    message = errorData.detail;
+                } else if (typeof errorData.message === 'string') {
+                    // Fallback to message field
+                    message = errorData.message;
+                } else {
+                    // Fallback: never show raw object
+                    message = 'An error occurred. Please try again.';
+                }
+
                 throw new ApiError(message, response.status, false);
             } catch (parseError) {
                 // If JSON parsing fails, fall through to HTML handling

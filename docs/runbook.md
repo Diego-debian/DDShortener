@@ -204,6 +204,50 @@ curl -I http://localhost/test123
 
 ---
 
+## Security
+
+### Verify Security Headers
+
+**Check all security headers are present**:
+
+```bash
+# Check Content-Security-Policy
+curl -I http://localhost/app/ | grep Content-Security-Policy
+
+# Expected output includes:
+# frame-src https://www.youtube-nocookie.com
+
+# Check X-Content-Type-Options
+curl -I http://localhost/app/ | grep X-Content-Type-Options
+
+# Expected: X-Content-Type-Options: nosniff
+
+# Check Referrer-Policy
+curl -I http://localhost/app/ | grep Referrer-Policy
+
+# Expected: Referrer-Policy: strict-origin-when-cross-origin
+
+# Check Permissions-Policy
+curl -I http://localhost/app/ | grep Permissions-Policy
+
+# Expected: Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**Test CSP Compliance**:
+
+```bash
+# Navigate to Go page and check browser console
+# Should see NO CSP violations
+# YouTube embed should load correctly
+```
+
+**If headers missing**:
+1. Check nginx.conf has security headers in server block
+2. Restart nginx: `docker compose restart proxy`
+3. Verify again
+
+---
+
 ## Troubleshooting
 
 ### Frontend not loading

@@ -236,17 +236,6 @@ Protected routes: "Session expired. Please log in again."
 
 ## UI Error Display Pattern
 
-All authentication pages use a consistent error banner:
-
-```tsx
-{error && (
-  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded mb-4">
-    {error}
-  </div>
-)}
-```
-
-**Design Guidelines**:
 - **Color**: Red for errors (`bg-red-50`, `text-red-800`)
 - **Position**: Above form, below page description
 - **Dismissal**: Auto-clear on new submission

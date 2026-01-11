@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiFetch, ApiError } from '../lib/apiFetch';
 import { clearToken } from '../lib/auth';
 import { addToHistory, getHistory, removeFromHistory, type URLHistoryItem } from '../lib/urlHistory';
+import Toast, { type ToastProps } from '../components/Toast';
 
 interface CreateURLResponse {
     short_code: string;
@@ -20,6 +21,7 @@ export default function Dashboard() {
     const [validationError, setValidationError] = useState('');
     const [createdUrl, setCreatedUrl] = useState<CreateURLResponse | null>(null);
     const [history, setHistory] = useState<URLHistoryItem[]>(getHistory());
+    const [toast, setToast] = useState<Omit<ToastProps, 'onClose'> | null>(null);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -79,13 +81,12 @@ export default function Dashboard() {
     const copyToClipboard = (text: string) => {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
-                // Could add toast notification here
-                alert('Link copied to clipboard!');
+                setToast({ message: 'Link copied to clipboard!', type: 'success' });
             }).catch(() => {
-                alert(`Copy this link: ${text}`);
+                setToast({ message: 'Failed to copy. Please copy manually.', type: 'error' });
             });
         } else {
-            alert(`Copy this link: ${text}`);
+            setToast({ message: 'Copy not supported. Please copy manually.', type: 'error' });
         }
     };
 
@@ -248,6 +249,15 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Toast Notification */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

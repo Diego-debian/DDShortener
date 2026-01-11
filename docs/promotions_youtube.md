@@ -17,6 +17,7 @@ The URL shortener supports showing promotional YouTube videos before redirecting
 ```json
 {
   "hold_seconds": 5,
+  "mode": "stable",
   "videos": [
     {
       "id": "dQw4w9WgXcQ",
@@ -35,6 +36,7 @@ The URL shortener supports showing promotional YouTube videos before redirecting
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `hold_seconds` | number | Yes | Countdown duration in seconds (minimum 0, recommended 3-10) |
+| `mode` | string | No | Selection mode: "stable" (default) or "random" |
 | `videos` | array | Yes | List of YouTube videos to show (can be empty) |
 | `videos[].id` | string | Yes | YouTube video ID (exactly 11 characters) |
 | `videos[].weight` | number | Yes | Weight for video selection (currently all videos have equal chance) |
@@ -115,21 +117,17 @@ https://youtube.com/shorts/dQw4w9WgXcQ
 
 ## Video Selection Algorithm
 
-**Stable Selection**: The same `short_code` always shows the same video.
+**Stable Selection (Default)**: The same `short_code` always shows the same video.
+- **Config**: `"mode": "stable"` (or omit mode)
+- **Algorithm**: `hash(short_code) % videos.length`
+- **Rationale**: Consistent user experience.
 
-**Algorithm**:
-1. Hash the `short_code` to a number
-2. Take modulo with number of valid videos
-3. Select video at that index
-
-**Example**:
-```typescript
-hash("test123") % 2 = 0  →  videos[0] (dQw4w9WgXcQ)
-hash("abc456") % 2 = 1   →  videos[1] (jNQXAC9IVRw)
-hash("test123") % 2 = 0  →  videos[0] (same video)
-```
-
-**Rationale**: Consistent user experience, no "random chaos".
+**Random Selection**: Videos are selected randomly weighted by their `weight` property.
+- **Config**: `"mode": "random"`
+- **Algorithm**: Weighted random selection.
+  - Video with `weight: 2` appears twice as often as `weight: 1`.
+  - Selection is recalculated on every page load (refreshing changes video).
+- **Rationale**: Variety, A/B testing, or simply showing different content.
 
 ---
 
@@ -335,7 +333,6 @@ The `/app-config/` route is NOT rate-limited (it's a static file).
 
 ## Future Enhancements
 
-- **Weighted selection**: Respect `weight` field for video probability
 - **A/B testing**: Track which videos perform better
 - **Time-based rules**: Show different videos at different times
 - **Geo-targeting**: Show videos based on user location

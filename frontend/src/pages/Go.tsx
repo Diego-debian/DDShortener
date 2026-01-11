@@ -38,6 +38,21 @@ function normalizeHoldSeconds(value: unknown): number {
     return DEFAULT_HOLD_SECONDS;
 }
 
+// Helper for weighted random selection
+function selectWeightedRandomVideo(videos: Array<{ id: string; weight: number }>): string | null {
+    const candidates = videos.filter(v => VIDEO_ID_REGEX.test(v.id) && v.weight > 0);
+    if (candidates.length === 0) return null;
+
+    const totalWeight = candidates.reduce((sum, v) => sum + v.weight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (const video of candidates) {
+        random -= video.weight;
+        if (random <= 0) return video.id;
+    }
+    return candidates[candidates.length - 1].id;
+}
+
 export default function Go() {
     const { short_code } = useParams<{ short_code: string }>();
     const [secondsLeft, setSecondsLeft] = useState<number>(DEFAULT_HOLD_SECONDS);
@@ -77,11 +92,25 @@ export default function Go() {
 
                 // Select video if available
                 if (data.videos && data.videos.length > 0) {
-                    const validVideos = data.videos.filter(v => VIDEO_ID_REGEX.test(v.id));
-                    console.debug('[Go] Valid videos:', validVideos.length, 'of', data.videos.length);
-                    if (validVideos.length > 0) {
-                        const index = hashShortCode(short_code) % validVideos.length;
-                        setSelectedVideo(validVideos[index].id);
+                    console.debug('[Go] Selection mode:', data.mode || 'stable');
+                    let newSelectedId: string | null = null;
+
+                    if (data.mode === 'random') {
+                        // Weighted random selection
+                        newSelectedId = selectWeightedRandomVideo(data.videos);
+                        console.debug('[Go] Randomly selected video:', newSelectedId);
+                    } else {
+                        // Stable selection (default)
+                        const validVideos = data.videos.filter(v => VIDEO_ID_REGEX.test(v.id));
+                        if (validVideos.length > 0) {
+                            const index = hashShortCode(short_code) % validVideos.length;
+                            newSelectedId = validVideos[index].id;
+                            console.debug('[Go] Stably selected video:', newSelectedId);
+                        }
+                    }
+
+                    if (newSelectedId) {
+                        setSelectedVideo(newSelectedId);
                     }
                 }
                 setConfigLoaded(true);

@@ -153,9 +153,9 @@ export default function Dashboard() {
                             <p className="text-gray-900 font-mono">{createdUrl.short_code}</p>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Short URL</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Share Link</label>
                             <p className="text-blue-600 font-mono break-all">
-                                {`${window.location.origin}/${createdUrl.short_code}`}
+                                {`${window.location.origin}/app/go/${createdUrl.short_code}`}
                             </p>
                         </div>
                         <div>
@@ -184,22 +184,16 @@ export default function Dashboard() {
                         </div>
                         <div className="flex gap-2 mt-4">
                             <button
-                                onClick={() => copyToClipboard(`${window.location.origin}/${createdUrl.short_code}`)}
+                                onClick={() => copyToClipboard(`${window.location.origin}/app/go/${createdUrl.short_code}`)}
                                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
                             >
-                                Copy Link
-                            </button>
-                            <button
-                                onClick={() => openInNewTab(`${window.location.origin}/${createdUrl.short_code}`)}
-                                className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
-                            >
-                                Open Link
+                                Copiar Link
                             </button>
                             <button
                                 onClick={() => openInNewTab(`/app/go/${createdUrl.short_code}`)}
-                                className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+                                className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
                             >
-                                Abrir con Hold (10s)
+                                Abrir Link
                             </button>
                         </div>
                     </div>
@@ -226,22 +220,16 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex gap-2 mt-3">
                                     <button
-                                        onClick={() => copyToClipboard(`${window.location.origin}/${item.short_code}`)}
+                                        onClick={() => copyToClipboard(`${window.location.origin}/app/go/${item.short_code}`)}
                                         className="text-sm bg-blue-100 text-blue-700 py-1 px-3 rounded hover:bg-blue-200"
                                     >
                                         Copy
                                     </button>
                                     <button
-                                        onClick={() => openInNewTab(`${window.location.origin}/${item.short_code}`)}
+                                        onClick={() => openInNewTab(`/app/go/${item.short_code}`)}
                                         className="text-sm bg-gray-100 text-gray-700 py-1 px-3 rounded hover:bg-gray-200"
                                     >
                                         Open
-                                    </button>
-                                    <button
-                                        onClick={() => openInNewTab(`/app/go/${item.short_code}`)}
-                                        className="text-sm bg-purple-100 text-purple-700 py-1 px-3 rounded hover:bg-purple-200"
-                                    >
-                                        Hold
                                     </button>
                                     <button
                                         onClick={() => navigate(`/stats/${item.short_code}`)}

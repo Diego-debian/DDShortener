@@ -113,9 +113,10 @@ This document describes the user-facing screens in the frontend application, the
   - Error display for failed attempts
 
 - **Result Card** (appears after successful creation):
-  - Displays: `short_code`, `short_url`, `long_url`, `created_at`, `is_active`
-  - "Copy Link" button (copies short URL to clipboard)
-  - "Open Link" button (opens in new tab)
+  - Displays: `short_code`, `short_url` (pointing to `/app/go/...`), `long_url`, `created_at`, `is_active`
+  - "Copiar Link" button (copies `/app/go/...` link)
+  - "Abrir Link" button (opens `/app/go/...` in new tab)
+  - "Abrir con Hold (10s)" button (opens `/app/go/...` in new tab)
   - Success styling (green border/background)
 
 - **Local History List**:
@@ -126,8 +127,9 @@ This document describes the user-facing screens in the frontend application, the
     - Original long URL (truncated)
     - Created date
   - Actions per item:
-    - **Copy**: Copy short URL to clipboard
-    - **Open**: Open short URL in new tab
+    - **Copy**: Copy `/app/go/...` link to clipboard
+    - **Open**: Open `/app/go/...` link in new tab
+    - **Hold**: Open `/app/go/...` link in new tab
     - **Stats**: Navigate to `/app/stats/:short_code`
     - **Remove**: Remove from local history only
 
@@ -269,8 +271,8 @@ This document describes the user-facing screens in the frontend application, the
   - Shows individual date + count
 
 - **Quick Actions**:
-  - "Copy Short URL" button
-  - "Open Short URL" button (new tab)
+  - "Copiar Link" button (copies `/app/go/...` link)
+  - "Abrir Link" button (opens `/app/go/...` in new tab)
   - "Back to Dashboard" link
 
 **API Integration**:

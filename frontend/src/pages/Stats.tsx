@@ -187,24 +187,24 @@ export default function Stats() {
             <div className="mt-6 flex gap-4">
                 <button
                     onClick={() => {
-                        const shortUrl = `${window.location.origin}/${stats.url.short_code}`;
+                        const shortUrl = `${window.location.origin}/app/go/${stats.url.short_code}`;
                         navigator.clipboard.writeText(shortUrl).then(() => {
-                            setToast({ message: 'Short URL copied!', type: 'success' });
+                            setToast({ message: 'Link copied!', type: 'success' });
                         }).catch(() => {
                             setToast({ message: 'Failed to copy. Please copy manually.', type: 'error' });
                         });
                     }}
                     className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
                 >
-                    Copy Short URL
+                    Copiar Link
                 </button>
                 <button
                     onClick={() => {
-                        window.open(`${window.location.origin}/${stats.url.short_code}`, '_blank', 'noopener,noreferrer');
+                        window.open(`${window.location.origin}/app/go/${stats.url.short_code}`, '_blank', 'noopener,noreferrer');
                     }}
                     className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
                 >
-                    Open Short URL
+                    Abrir Link
                 </button>
             </div>
 

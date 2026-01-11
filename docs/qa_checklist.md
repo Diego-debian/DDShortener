@@ -48,8 +48,9 @@ This checklist should be completed before each release to ensure quality and pre
 ### URL History
 - [ ] Create URL → Appears in history
 - [ ] Refresh page → History persists (localStorage)
-- [ ] Click "Copy" button → Toast shows "Link copied!"
-- [ ] Click "Open" button → Opens in new tab
+- [ ] Click "Copy" button → Toast shows "Link copied!" & Clipboard has `/app/go/...` link
+- [ ] Click "Open" button → Opens `/app/go/...` in new tab (Wait 10s)
+- [ ] Click "Hold" button → Opens `/app/go/...` in new tab (Wait 10s)
 - [ ] Click "Stats" button → Navigates to `/app/stats/:short_code`
 - [ ] Click "Remove" button → Removes from history
 - [ ] Close/reopen browser → History still exists
@@ -75,8 +76,8 @@ This checklist should be completed before each release to ensure quality and pre
   - [ ] Clicks by date (bar chart)
 
 ### Copy/Open Buttons
-- [ ] Click "Copy Short URL" → Toast shows success (not alert)
-- [ ] Click "Open Short URL" → Opens in new tab
+- [ ] Click "Copiar Link" → Toast shows success & Clipboard has `/app/go/...` link
+- [ ] Click "Abrir Link" → Opens `/app/go/...` in new tab (Wait 10s)
 
 ### Error States
 - [ ] Navigate to `/app/stats/nonexistent` → Shows "URL not found or inactive" (404)

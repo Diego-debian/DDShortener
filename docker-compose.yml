@@ -6,9 +6,12 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./app-config:/etc/nginx/app-config:ro
     depends_on:
       - backend
       - frontend
+    networks:
+      - default
     restart: unless-stopped
 
   backend:

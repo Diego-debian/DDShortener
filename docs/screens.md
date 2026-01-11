@@ -179,23 +179,70 @@ This document describes the user-facing screens in the frontend application, the
 
 ---
 
-### Redirect Preview
+### Redirect Preview (Go Page)
 
 **Route**: `/app/go/:short_code` (Public)
 
-**Purpose**: Preview short code before redirection (future feature)
+**Purpose**: Show promotional YouTube content before redirecting to destination URL
 
-**Features** (Current - Placeholder):
-- Display short code
-- Description of redirect preview concept
-- Link to view statistics
-- Link back to dashboard
+**Features**:
+- **YouTube Embed**:
+  - Loads from `/app-config/promotions.json`
+  - Privacy-enhanced mode (youtube-nocookie.com)
+  - Autoplay + muted for better UX
+  - Stable video selection per short_code (hash-based)
 
-**Future Features**:
-- Show target URL before redirecting
-- Countdown timer before redirect
-- Safety warning if flagged URL
-- QR code generation
+- **Countdown Timer**:
+  - Configurable duration (default 5 seconds)
+  - Large number display
+  - Visual feedback during wait
+
+- **Action Buttons**:
+  - "Ir ahora" → Immediate redirect to `/{short_code}`
+  - "Ver en YouTube" → Open video on YouTube (new tab)
+
+- **Validation**:
+  - Short code: `/^[A-Za-z0-9_-]{1,64}$/`
+  - Video ID: `/^[A-Za-z0-9_-]{11}$/`
+
+**Configuration**:
+- **File**: `/app-config/promotions.json`
+- **Cache**: 2 minutes
+- **Editable**: Without frontend redeploy
+
+**API Integration**:
+- **Fetch**: GET `/app-config/promotions.json` (no auth required)
+- **Fallback**: If fetch fails, show countdown only (no video)
+- **Redirect**: `window.location.href = "/{short_code}"` after countdown
+
+**Error States**:
+- **Invalid short_code**:
+  - Show error page
+  - Do NOT start countdown
+  - Do NOT auto-redirect
+  
+- **Invalid video ID**:
+  - Silently ignore video
+  - Show countdown only
+  - Still redirect after countdown
+
+- **Config fetch failure**:
+  - Console warning (not user-facing error)
+  - Use fallback (5s countdown, no video)
+  - Redirect works normally
+
+**User Flow**:
+1. User receives link to `/app/go/:short_code`
+2. Page loads with YouTube embed (if available)
+3. Countdown starts from configured seconds
+4. User can:
+   - Wait for auto-redirect
+   - Click "Ir ahora" to skip
+   - Click "Ver en YouTube" to watch full video
+5. At countdown=0: Redirect to `/{short_code}`
+6. Backend handles final redirect (302/404/410)
+
+**See also**: [promotions_youtube.md](./promotions_youtube.md) for config details
 
 ---
 

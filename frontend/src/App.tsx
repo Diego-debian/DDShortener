@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import RequireAuth from './components/RequireAuth'
 import About from './pages/About'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -16,10 +17,22 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="dashboard" element={<Dashboard />} />
+
+        {/* Protected routes */}
+        <Route path="dashboard" element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        } />
+        <Route path="me" element={
+          <RequireAuth>
+            <Me />
+          </RequireAuth>
+        } />
+
+        {/* Public routes */}
         <Route path="go/:short_code" element={<Go />} />
         <Route path="stats/:short_code" element={<Stats />} />
-        <Route path="me" element={<Me />} />
       </Route>
     </Routes>
   )

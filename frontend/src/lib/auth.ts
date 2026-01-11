@@ -1,7 +1,7 @@
 /**
  * Token storage key in localStorage
  */
-const TOKEN_KEY = 'url_shortener_token';
+const TOKEN_KEY = 'auth_token';
 
 /**
  * Get authentication token from localStorage

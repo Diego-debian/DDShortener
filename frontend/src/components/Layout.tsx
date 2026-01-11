@@ -1,6 +1,15 @@
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { isAuthenticated, clearToken } from '../lib/auth'
 
 export default function Layout() {
+    const navigate = useNavigate();
+    const authenticated = isAuthenticated();
+
+    const handleLogout = () => {
+        clearToken();
+        navigate('/login', { replace: true });
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             {/* Navbar */}
@@ -18,27 +27,40 @@ export default function Layout() {
                                 >
                                     About
                                 </Link>
-                                <Link
-                                    to="/dashboard"
-                                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-gray-900"
-                                >
-                                    Dashboard
-                                </Link>
+                                {authenticated && (
+                                    <Link
+                                        to="/dashboard"
+                                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+                                    >
+                                        Dashboard
+                                    </Link>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <Link
-                                to="/login"
-                                className="text-sm font-medium text-gray-700 hover:text-gray-900"
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                            >
-                                Register
-                            </Link>
+                            {authenticated ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="text-sm font-medium text-gray-700 hover:text-gray-900"
+                                >
+                                    Logout
+                                </button>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="text-sm font-medium text-gray-700 hover:text-gray-900"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        Register
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -62,7 +84,7 @@ export default function Layout() {
                             <Link to="/about" className="text-sm text-gray-500 hover:text-gray-900">
                                 About
                             </Link>
-                            <a href="/api/docs" className="text-sm text-gray-500 hover:text-gray-900">
+                            <a href="/docs" className="text-sm text-gray-500 hover:text-gray-900">
                                 API Docs
                             </a>
                         </div>
@@ -72,3 +94,4 @@ export default function Layout() {
         </div>
     )
 }
+

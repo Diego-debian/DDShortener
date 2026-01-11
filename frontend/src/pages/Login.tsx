@@ -21,11 +21,10 @@ export default function Login() {
         setLoading(true);
 
         try {
-            // API expects username field (but we send email)
             const response = await apiFetch<LoginResponse>('/api/auth/login-json', {
                 method: 'POST',
                 body: JSON.stringify({
-                    username: email,  // Backend expects 'username' field
+                    email,
                     password,
                 }),
                 skipAuth: true,
@@ -40,7 +39,8 @@ export default function Login() {
                 if (err.status === 401) {
                     setError('Invalid email or password');
                 } else if (err.status === 422) {
-                    setError('Please check your email and password format');
+                    // Show actual validation error from backend
+                    setError(err.message);
                 } else if (err.status === 503) {
                     setError('Service temporarily unavailable. Please try again later.');
                 } else {

@@ -3,11 +3,22 @@ import { useParams, Link } from 'react-router-dom';
 import { apiFetch, ApiError } from '../lib/apiFetch';
 import Toast, { type ToastProps } from '../components/Toast';
 
+interface ByDateEntry {
+    date: string;
+    clicks: number;
+}
+
 interface StatsResponse {
-    short_code: string;
-    long_url: string;
+    url: {
+        id: number;
+        short_code: string;
+        long_url: string;
+        created_at: string;
+        expires_at: string | null;
+        is_active: boolean;
+    };
     total_clicks: number;
-    by_date: Record<string, number>;
+    by_date: ByDateEntry[];
 }
 
 export default function Stats() {
@@ -103,8 +114,11 @@ export default function Stats() {
         return null;
     }
 
-    // Sort dates for chart display
-    const sortedDates = Object.keys(stats.by_date).sort();
+    // Sort by_date entries by date
+    const sortedByDate = stats.by_date && Array.isArray(stats.by_date)
+        ? [...stats.by_date].sort((a, b) => a.date.localeCompare(b.date))
+        : [];
+    const maxClicks = sortedByDate.length > 0 ? Math.max(...sortedByDate.map(d => d.clicks)) : 0;
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -122,11 +136,11 @@ export default function Stats() {
             <div className="bg-white rounded-lg shadow p-6 mb-6">
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Short Code</label>
-                    <p className="text-2xl font-mono font-bold text-blue-600">{stats.short_code}</p>
+                    <p className="text-2xl font-mono font-bold text-blue-600">{stats.url.short_code}</p>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Target URL</label>
-                    <p className="text-gray-900 break-all">{stats.long_url}</p>
+                    <p className="text-gray-900 break-all">{stats.url.long_url}</p>
                 </div>
             </div>
 
@@ -141,24 +155,26 @@ export default function Stats() {
             <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Clicks by Date</h2>
 
-                {sortedDates.length === 0 ? (
-                    <p className="text-gray-500">No click data available yet.</p>
+                {!stats.by_date || !Array.isArray(stats.by_date) ? (
+                    <p className="text-gray-500">No data available.</p>
+                ) : sortedByDate.length === 0 ? (
+                    <p className="text-gray-500">No clicks yet.</p>
                 ) : (
                     <div className="space-y-2">
-                        {sortedDates.map((date) => (
-                            <div key={date} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                                <span className="text-gray-700">{date}</span>
+                        {sortedByDate.map((entry) => (
+                            <div key={entry.date} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                <span className="text-gray-700">{entry.date}</span>
                                 <div className="flex items-center gap-2">
                                     <div className="w-32 bg-gray-200 rounded-full h-2">
                                         <div
                                             className="bg-blue-600 h-2 rounded-full"
                                             style={{
-                                                width: `${(stats.by_date[date] / Math.max(...Object.values(stats.by_date))) * 100}%`
+                                                width: `${maxClicks > 0 ? (entry.clicks / maxClicks) * 100 : 0}%`
                                             }}
                                         />
                                     </div>
                                     <span className="text-gray-900 font-semibold w-12 text-right">
-                                        {stats.by_date[date]}
+                                        {entry.clicks}
                                     </span>
                                 </div>
                             </div>
@@ -171,7 +187,7 @@ export default function Stats() {
             <div className="mt-6 flex gap-4">
                 <button
                     onClick={() => {
-                        const shortUrl = `${window.location.origin}/${stats.short_code}`;
+                        const shortUrl = `${window.location.origin}/${stats.url.short_code}`;
                         navigator.clipboard.writeText(shortUrl).then(() => {
                             setToast({ message: 'Short URL copied!', type: 'success' });
                         }).catch(() => {
@@ -184,7 +200,7 @@ export default function Stats() {
                 </button>
                 <button
                     onClick={() => {
-                        window.open(`${window.location.origin}/${stats.short_code}`, '_blank', 'noopener,noreferrer');
+                        window.open(`${window.location.origin}/${stats.url.short_code}`, '_blank', 'noopener,noreferrer');
                     }}
                     className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
                 >

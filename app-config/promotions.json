@@ -3,19 +3,19 @@
     "mode": "stable",
     "videos": [
         {
-            "id": "dQw4w9WgXcQ",
+            "id": "REPLACE_ME_1",
             "weight": 1,
-            "title": "TODO: Replace with Diego's video 1"
+            "title": "TODO: Replace with Diego's YouTube video ID (exactly 11 characters)"
         },
         {
-            "id": "jNQXAC9IVRw",
+            "id": "REPLACE_ME_2",
             "weight": 1,
-            "title": "TODO: Replace with Diego's video 2"
+            "title": "TODO: Replace with Diego's YouTube video ID (exactly 11 characters)"
         },
         {
-            "id": "9bZkp7q19f0",
+            "id": "REPLACE_ME_3",
             "weight": 1,
-            "title": "TODO: Replace with Diego's video 3"
+            "title": "TODO: Replace with Diego's YouTube video ID (exactly 11 characters)"
         }
     ]
 }

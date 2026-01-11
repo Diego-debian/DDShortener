@@ -195,6 +195,12 @@ export default function Dashboard() {
                             >
                                 Open Link
                             </button>
+                            <button
+                                onClick={() => openInNewTab(`/app/go/${createdUrl.short_code}`)}
+                                className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+                            >
+                                Abrir con Hold (10s)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -232,8 +238,14 @@ export default function Dashboard() {
                                         Open
                                     </button>
                                     <button
-                                        onClick={() => navigate(`/stats/${item.short_code}`)}
+                                        onClick={() => openInNewTab(`/app/go/${item.short_code}`)}
                                         className="text-sm bg-purple-100 text-purple-700 py-1 px-3 rounded hover:bg-purple-200"
+                                    >
+                                        Hold
+                                    </button>
+                                    <button
+                                        onClick={() => navigate(`/stats/${item.short_code}`)}
+                                        className="text-sm bg-indigo-100 text-indigo-700 py-1 px-3 rounded hover:bg-indigo-200"
                                     >
                                         Stats
                                     </button>

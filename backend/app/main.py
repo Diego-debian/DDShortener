@@ -22,10 +22,11 @@ from fastapi.responses import HTMLResponse
 
 app = FastAPI(title="URL Shortener MVP", version="0.1.0", redoc_url=None)
 
-from .routers import health, urls, redirect, auth
+from .routers import health, urls, redirect, auth, admin
 
 app.include_router(health.router)
 app.include_router(auth.router)
+app.include_router(admin.router)  # Admin routes (protected)
 app.include_router(urls.router)
 
 # Serve static files (needs to be before the redirect router)

@@ -67,11 +67,9 @@ export default function About() {
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">Contacto y apoyo</h2>
                     <p className="text-gray-700">
-                        <a href="mailto:b2english.app@gmail.com" className="text-blue-600 hover:underline">b2english.app@gmail.com</a>
+                        <a href="mailto:profediegoparra01@gmail.com" className="text-blue-600 hover:underline">profediegoparra01@gmail.com</a>
                         <br />
-                        Correo temporal durante la fase beta.
-                        <br />
-                        Donaciones voluntarias disponibles próximamente.
+                        Correo para contacto y activación Premium.
                         <br />
                         <a
                             href="https://www.paypal.com/donate/?business=profediegoparra01@gmail.com"

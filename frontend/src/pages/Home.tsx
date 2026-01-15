@@ -107,11 +107,10 @@ export default function Home() {
             {/* Contact */}
             <div className="text-center text-gray-500 text-sm">
                 <p>
-                    Contacto: <a href="mailto:b2english.app@gmail.com" className="text-blue-600 hover:underline">b2english.app@gmail.com</a>
+                    Contacto: <a href="mailto:profediegoparra01@gmail.com" className="text-blue-600 hover:underline">profediegoparra01@gmail.com</a>
                 </p>
                 <p className="mt-1 text-xs">Proyecto by DiegoDebian • Beta pública</p>
             </div>
         </div>
     );
 }
-

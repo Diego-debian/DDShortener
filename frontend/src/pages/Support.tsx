@@ -155,7 +155,7 @@ export default function Support() {
                     </li>
                     <li className="flex items-center text-gray-700">
                         <span className="text-green-500 mr-2">✓</span>
-                        Página de espera reducida (próximamente)
+                        Espera reducida (3 segundos vs 10 en free)
                     </li>
                     <li className="flex items-center text-gray-700">
                         <span className="text-green-500 mr-2">✓</span>

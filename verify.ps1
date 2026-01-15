@@ -347,6 +347,47 @@ catch {
   Fail "/api/me test failed: $($_.Exception.Message)"
 }
 
+# ----------------------------
+# Test 11: SECRET_KEY security warning (informational, does not fail)
+# ----------------------------
+Info "Test 11: SECRET_KEY security check (informational)"
+
+# Check if backend is using default insecure SECRET_KEY
+# We test by inspecting the container environment (development only)
+$envCheck = docker compose exec -T backend sh -c 'echo $ENVIRONMENT' 2>$null
+$secretCheck = docker compose exec -T backend sh -c 'echo $SECRET_KEY' 2>$null
+
+if ($envCheck -match "prod") {
+  # In production, the app would have already crashed if SECRET_KEY was insecure
+  Ok "Production environment detected - app running means SECRET_KEY passed guardrail"
+}
+else {
+  # In development, warn if using default key
+  $insecureKeys = @(
+    "super_secret_key_for_dev_only",
+    "change_me",
+    "secret",
+    "secretkey"
+  )
+  
+  $isInsecure = $false
+  foreach ($key in $insecureKeys) {
+    if ($secretCheck -match $key) {
+      $isInsecure = $true
+      break
+    }
+  }
+  
+  if ($isInsecure -or $secretCheck.Length -lt 32) {
+    Write-Host "WARN: Default/insecure SECRET_KEY detected in development" -ForegroundColor Yellow
+    Write-Host "      This is OK for local testing, but MUST be changed before production." -ForegroundColor Yellow
+    Write-Host "      Generate a secure key: python -c `"import secrets; print(secrets.token_urlsafe(64))`"" -ForegroundColor Gray
+  }
+  else {
+    Ok "SECRET_KEY appears secure (non-default, length >= 32)"
+  }
+}
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "ALL TESTS PASSED" -ForegroundColor Green

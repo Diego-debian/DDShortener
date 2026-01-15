@@ -1,5 +1,7 @@
 {
     "hold_seconds": 10,
+    "free_hold_seconds": 10,
+    "premium_hold_seconds": 3,
     "videos": [
         {
             "id": "D8IODzKi0Fc",

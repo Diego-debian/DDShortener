@@ -11,60 +11,68 @@ export default function Layout() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
-            {/* Navbar */}
-            <nav className="bg-white shadow-sm border-b border-gray-200">
+        <div className="min-h-screen flex flex-col bg-gray-50">
+            {/* Header */}
+            <header className="bg-slate-900 border-b border-slate-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex">
-                            <Link to="/" className="flex items-center text-xl font-bold text-blue-600">
-                                URL Shortener
+                    <div className="flex justify-between h-14">
+                        <div className="flex items-center">
+                            <Link to="/" className="text-lg font-semibold text-gray-100 hover:text-white">
+                                DD Shortener
                             </Link>
-                            <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
+                            <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
                                 <Link
                                     to="/about"
-                                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+                                    className="text-sm text-gray-300 hover:text-violet-400 transition-colors"
                                 >
-                                    About
+                                    Acerca de
                                 </Link>
                                 {authenticated && (
                                     <Link
                                         to="/dashboard"
-                                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+                                        className="text-sm text-gray-300 hover:text-violet-400 transition-colors"
                                     >
                                         Dashboard
                                     </Link>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
                             {authenticated ? (
-                                <button
-                                    onClick={handleLogout}
-                                    className="text-sm font-medium text-gray-700 hover:text-gray-900"
-                                >
-                                    Logout
-                                </button>
+                                <>
+                                    <Link
+                                        to="/me"
+                                        className="text-sm text-gray-300 hover:text-violet-400 transition-colors"
+                                    >
+                                        Mi Cuenta
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                                    >
+                                        Salir
+                                    </button>
+                                </>
                             ) : (
                                 <>
                                     <Link
                                         to="/login"
-                                        className="text-sm font-medium text-gray-700 hover:text-gray-900"
+                                        className="text-sm text-gray-300 hover:text-violet-400 transition-colors"
                                     >
-                                        Login
+                                        Iniciar Sesión
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                        className="text-sm px-3 py-1.5 rounded border border-violet-500 text-violet-400 hover:bg-violet-500/10 transition-colors"
                                     >
-                                        Register
+                                        Registrarse
                                     </Link>
                                 </>
                             )}
                         </div>
                     </div>
                 </div>
-            </nav>
+            </header>
 
             {/* Main Content */}
             <main className="flex-1">
@@ -74,19 +82,19 @@ export default function Layout() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-gray-50 border-t border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm text-gray-500">
-                            © 2026 URL Shortener. All rights reserved.
+            <footer className="bg-slate-950 border-t border-slate-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <p className="text-xs text-gray-500">
+                            Proyecto open source (GPLv3) • Beta pública
                         </p>
-                        <div className="flex space-x-6">
-                            <Link to="/about" className="text-sm text-gray-500 hover:text-gray-900">
-                                About
+                        <div className="flex space-x-4">
+                            <Link to="/support" className="text-xs text-gray-400 hover:text-violet-400 transition-colors">
+                                Apoyar
                             </Link>
-                            <a href="/docs" className="text-sm text-gray-500 hover:text-gray-900">
-                                API Docs
-                            </a>
+                            <Link to="/about" className="text-xs text-gray-400 hover:text-violet-400 transition-colors">
+                                Acerca de
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -94,4 +102,3 @@ export default function Layout() {
         </div>
     )
 }
-

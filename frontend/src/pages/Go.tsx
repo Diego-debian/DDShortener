@@ -301,9 +301,9 @@ export default function Go() {
                 </Link>
                 <Link
                     to="/support"
-                    className="text-purple-500 hover:text-purple-700 text-xs"
+                    className="text-purple-600 hover:text-purple-800 text-xs"
                 >
-                    ¿Quieres quitar la espera? Apoya el proyecto y te activo Premium →
+                    💜 ¿Quitar la espera? Apoya el proyecto →
                 </Link>
             </div>
         </div>

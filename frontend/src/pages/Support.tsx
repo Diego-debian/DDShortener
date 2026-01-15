@@ -80,7 +80,7 @@ export default function Support() {
             {/* Donation Methods */}
             <div className="bg-white rounded-lg shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Métodos de Donación</h2>
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {config.methods.map((method, index) => (
                         <a
                             key={index}
@@ -88,8 +88,8 @@ export default function Support() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`block rounded-lg p-4 transition-colors ${method.primary
-                                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-lg'
-                                    : 'border border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                                ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                                : 'bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100'
                                 }`}
                         >
                             <div className="flex justify-between items-center">
@@ -109,8 +109,8 @@ export default function Support() {
                                 </div>
                                 {method.suggested_amount && (
                                     <span className={`text-sm px-2 py-1 rounded ${method.primary
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-green-100 text-green-700'
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-green-100 text-green-700'
                                         }`}>
                                         {method.suggested_amount}
                                     </span>

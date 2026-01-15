@@ -74,26 +74,32 @@ export default function Home() {
             </div>
 
             {/* Support */}
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 text-center">
-                <h2 className="text-xl font-semibold mb-3 text-gray-900">Apoya el proyecto</h2>
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border border-purple-200 text-center">
+                <h2 className="text-xl font-semibold mb-3 text-gray-900">💜 Apoya el proyecto</h2>
                 <p className="text-gray-700 mb-4">
                     DD Shortener es software libre.
                     <br />
-                    Si te resulta útil, puedes apoyar su desarrollo y los costos del servidor con una donación voluntaria.
+                    Si te resulta útil, puedes apoyar su desarrollo con una donación voluntaria.
                 </p>
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-center gap-3">
                     <a
                         href="https://www.paypal.com/donate/?business=profediegoparra01@gmail.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md"
                     >
-                        Donar por PayPal
+                        💳 Donar por PayPal
                     </a>
-                    <button disabled className="bg-gray-300 text-gray-500 px-4 py-2 rounded cursor-not-allowed">
-                        Ko-fi (próximamente)
-                    </button>
+                    <Link
+                        to="support"
+                        className="bg-purple-100 text-purple-700 px-6 py-2 rounded-lg hover:bg-purple-200 transition-colors"
+                    >
+                        Ver opciones →
+                    </Link>
                 </div>
+                <p className="text-xs text-gray-500 mt-3">
+                    Activación premium manual por correo (por ahora)
+                </p>
             </div>
 
             {/* Contact */}

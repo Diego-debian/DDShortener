@@ -6,10 +6,13 @@ interface DonationMethod {
     description: string;
     url: string;
     suggested_amount?: string;
+    primary?: boolean;
+    icon?: string;
 }
 
 interface ActivationInstructions {
     title: string;
+    subtitle?: string;
     steps: string[];
 }
 
@@ -84,15 +87,31 @@ export default function Support() {
                             href={method.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                            className={`block rounded-lg p-4 transition-colors ${method.primary
+                                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-lg'
+                                    : 'border border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                                }`}
                         >
                             <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="font-semibold text-gray-900">{method.name}</h3>
-                                    <p className="text-sm text-gray-600">{method.description}</p>
+                                <div className="flex items-center gap-3">
+                                    {method.icon && (
+                                        <span className="text-2xl">{method.icon}</span>
+                                    )}
+                                    <div>
+                                        <h3 className={`font-semibold ${method.primary ? 'text-white' : 'text-gray-900'}`}>
+                                            {method.name}
+                                            {method.primary && <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded">Recomendado</span>}
+                                        </h3>
+                                        <p className={`text-sm ${method.primary ? 'text-blue-100' : 'text-gray-600'}`}>
+                                            {method.description}
+                                        </p>
+                                    </div>
                                 </div>
                                 {method.suggested_amount && (
-                                    <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded">
+                                    <span className={`text-sm px-2 py-1 rounded ${method.primary
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-green-100 text-green-700'
+                                        }`}>
                                         {method.suggested_amount}
                                     </span>
                                 )}
@@ -104,9 +123,14 @@ export default function Support() {
 
             {/* Activation Instructions */}
             <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold text-purple-900 mb-4">
+                <h2 className="text-xl font-semibold text-purple-900 mb-2">
                     {config.activation_instructions.title}
                 </h2>
+                {config.activation_instructions.subtitle && (
+                    <p className="text-purple-700 text-sm mb-4">
+                        {config.activation_instructions.subtitle}
+                    </p>
+                )}
                 <ol className="list-decimal list-inside space-y-2 text-gray-700">
                     {config.activation_instructions.steps.map((step, index) => (
                         <li key={index}>{step}</li>

@@ -83,3 +83,32 @@ class User(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+# ============================================================
+# Admin Schemas (protected endpoints)
+# ============================================================
+
+class PlanUpdate(BaseModel):
+    """Admin schema for updating user plan. Strict validation."""
+    plan: str = Field(..., pattern=r'^(free|premium|admin)$', description="Plan: free, premium, or admin")
+    
+    model_config = ConfigDict(extra='forbid')
+
+
+class URLStatusUpdate(BaseModel):
+    """Admin schema for updating URL status. Strict validation."""
+    is_active: bool = Field(..., description="Whether the URL is active")
+    
+    model_config = ConfigDict(extra='forbid')
+
+
+class TopURLInfo(BaseModel):
+    """Response schema for top URLs by click count."""
+    short_code: str
+    long_url: str
+    click_count: int
+    user_email: Optional[str]
+    is_active: bool
+    
+    model_config = ConfigDict(from_attributes=True)

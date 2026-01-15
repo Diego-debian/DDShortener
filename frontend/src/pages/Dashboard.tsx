@@ -251,17 +251,17 @@ export default function Dashboard() {
             </div>
 
             {/* Support CTA */}
-            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4 mt-6">
-                <div className="flex items-center justify-between">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-6">
+                <div className="flex items-center justify-between gap-4">
                     <div>
-                        <h3 className="font-semibold text-purple-900">💜 Apoya el ecosistema DiegoDebian</h3>
-                        <p className="text-sm text-purple-700">Quita la espera y obtén más URLs — Activación Premium manual por correo</p>
+                        <h3 className="font-semibold text-purple-900">💜 Apoya el ecosistema</h3>
+                        <p className="text-sm text-purple-700">Quita la espera y obtén más URLs</p>
                     </div>
                     <button
                         onClick={() => navigate('/support')}
-                        className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 text-sm whitespace-nowrap"
+                        className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 text-sm whitespace-nowrap"
                     >
-                        Apoyar →
+                        Ver opciones →
                     </button>
                 </div>
             </div>

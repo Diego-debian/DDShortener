@@ -1,0 +1,28 @@
+{
+    "title": "Apoya DD Shortener",
+    "subtitle": "Tu donación ayuda a mantener el servicio gratuito y a desarrollar nuevas funciones.",
+    "methods": [
+        {
+            "name": "PayPal",
+            "description": "Donación única o recurrente",
+            "url": "https://paypal.me/diegodebian",
+            "suggested_amount": "$5 USD"
+        },
+        {
+            "name": "Ko-fi",
+            "description": "Invítame un café ☕",
+            "url": "https://ko-fi.com/diegodebian",
+            "suggested_amount": "$3 USD"
+        }
+    ],
+    "disclaimer": "No procesamos pagos directamente. Las donaciones se gestionan a través de plataformas externas seguras. Para activar tu plan Premium, contacta al admin con tu email después de donar.",
+    "activation_instructions": {
+        "title": "¿Ya donaste?",
+        "steps": [
+            "Envía un correo a b2english.app@gmail.com",
+            "Incluye el email de tu cuenta DD Shortener",
+            "Adjunta el comprobante de tu donación",
+            "Activaremos tu plan Premium en 24-48 horas"
+        ]
+    }
+}

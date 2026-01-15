@@ -105,7 +105,7 @@ export default function Dashboard() {
 
             {/* URL Creation Form */}
             <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Short URL</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Crear URL Corta</h2>
 
                 {error && (
                     <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
@@ -116,7 +116,7 @@ export default function Dashboard() {
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="longUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                            Long URL
+                            URL Larga
                         </label>
                         <input
                             type="url"
@@ -138,7 +138,7 @@ export default function Dashboard() {
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={loading}
                     >
-                        {loading ? 'Creating...' : 'Create Short URL'}
+                        {loading ? 'Creando...' : 'Crear URL Corta'}
                     </button>
                 </form>
             </div>
@@ -146,37 +146,37 @@ export default function Dashboard() {
             {/* Result Card */}
             {createdUrl && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                    <h3 className="text-lg font-semibold text-green-900 mb-4">✓ URL Created Successfully!</h3>
+                    <h3 className="text-lg font-semibold text-green-900 mb-4">✓ ¡URL Creada!</h3>
                     <div className="space-y-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Short Code</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Código Corto</label>
                             <p className="text-gray-900 font-mono">{createdUrl.short_code}</p>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Share Link</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Enlace para Compartir</label>
                             <p className="text-blue-600 font-mono break-all">
                                 {`${window.location.origin}/app/go/${createdUrl.short_code}`}
                             </p>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Original URL</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">URL Original</label>
                             <p className="text-gray-600 break-all">{createdUrl.long_url}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Creada</label>
                                 <p className="text-gray-900">{new Date(createdUrl.created_at).toLocaleDateString()}</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                                 <p className="text-gray-900">
                                     {createdUrl.is_active ? (
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Active
+                                            Activo
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            Inactive
+                                            Inactivo
                                         </span>
                                     )}
                                 </p>
@@ -187,13 +187,13 @@ export default function Dashboard() {
                                 onClick={() => copyToClipboard(`${window.location.origin}/app/go/${createdUrl.short_code}`)}
                                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
                             >
-                                Copiar Link
+                                Copiar
                             </button>
                             <button
                                 onClick={() => openInNewTab(`/app/go/${createdUrl.short_code}`)}
                                 className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
                             >
-                                Abrir Link
+                                Abrir
                             </button>
                         </div>
                     </div>
@@ -202,9 +202,9 @@ export default function Dashboard() {
 
             {/* History List */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent URLs</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">URLs Recientes</h2>
                 {history.length === 0 ? (
-                    <p className="text-gray-500">No URLs created yet. Create your first short URL above!</p>
+                    <p className="text-gray-500">Aún no has creado URLs. ¡Crea tu primera URL corta arriba!</p>
                 ) : (
                     <div className="space-y-3">
                         {history.map((item) => (
@@ -214,7 +214,7 @@ export default function Dashboard() {
                                         <p className="font-mono text-blue-600 font-semibold">{item.short_code}</p>
                                         <p className="text-sm text-gray-600 break-all">{item.long_url}</p>
                                         <p className="text-xs text-gray-400 mt-1">
-                                            Created: {new Date(item.created_at).toLocaleDateString()}
+                                            Creada: {new Date(item.created_at).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
@@ -223,25 +223,25 @@ export default function Dashboard() {
                                         onClick={() => copyToClipboard(`${window.location.origin}/app/go/${item.short_code}`)}
                                         className="text-sm bg-blue-100 text-blue-700 py-1 px-3 rounded hover:bg-blue-200"
                                     >
-                                        Copy
+                                        Copiar
                                     </button>
                                     <button
                                         onClick={() => openInNewTab(`/app/go/${item.short_code}`)}
                                         className="text-sm bg-gray-100 text-gray-700 py-1 px-3 rounded hover:bg-gray-200"
                                     >
-                                        Open
+                                        Abrir
                                     </button>
                                     <button
                                         onClick={() => navigate(`/stats/${item.short_code}`)}
                                         className="text-sm bg-indigo-100 text-indigo-700 py-1 px-3 rounded hover:bg-indigo-200"
                                     >
-                                        Stats
+                                        Estadísticas
                                     </button>
                                     <button
                                         onClick={() => handleRemoveFromHistory(item.short_code)}
                                         className="text-sm bg-red-100 text-red-700 py-1 px-3 rounded hover:bg-red-200"
                                     >
-                                        Remove
+                                        Eliminar
                                     </button>
                                 </div>
                             </div>

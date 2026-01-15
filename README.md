@@ -1,37 +1,93 @@
-# DD Shortener (Beta) — Public Beta (Enero 2026)
+# DD Shortener
 
-Este proyecto es un acortador de URLs experimental con una página intermedia de espera para validación de producto.
-Actualmente se encuentra en **Beta pública**.
+Un acortador de URLs con página intermedia. Proyecto open source (GPLv3) en **beta pública**.
 
-## Estado del Proyecto
-🚧 **Beta Pública**
-El servicio opera en modo "best-effort". La persistencia de datos y el tiempo de actividad no están garantizados al 100% durante esta fase. Las características pueden cambiar según el feedback.
+## 🚀 Quick Start
 
-## Cómo funciona
-1.  **Crear enlace**: Generas una URL corta desde el Dashboard.
-2.  **Compartir**: Usas el enlace formato `/app/go/{short_code}`.
-3.  **Redirección**: El usuario ve una página intermedia (Hold Page) antes de ser redirigido al destino final.
+```bash
+# Clonar y ejecutar
+git clone <repo-url>
+cd repo
+docker compose up -d --build
 
-## Transparencia y Monetización
-*   **Plan Free**: Muestra un video promocional en la página intermedia antes de la redirección. Esto ayuda a cubrir los costos del servidor durante la beta.
-*   **Plan Premium (Roadmap)**: Ofrecerá una experiencia sin anuncios y con menor tiempo de espera. (Sin fecha definida).
+# Verificar
+./verify.ps1  # Windows/PowerShell
+```
 
-### Autopromoción
-Durante la beta, la autopromoción está permitida **exclusivamente** en la página de espera (hold page) del plan gratuito, configurada a través de `promotions.json`.
+**URLs locales:**
+- Frontend: `http://localhost/app/`
+- API: `http://localhost/api/health`
+- Redirección: `http://localhost/{short_code}`
 
-## Resumen de Rutas
-*   **Frontend**: `/app/*` (Landing, Dashboard, Login, About)
-*   **API**: `/api/*` (Endpoints del backend)
-*   **Redirección**: `/{short_code}` (Ruta final gestionada por el backend)
-*   **Configuración**: `/app-config/promotions.json` (Editable sin redeploy del frontend)
+## 📋 Rutas Principales
 
-## Contacto (Beta)
-📧 **b2english.app@gmail.com**
-*Correo temporal para contacto y reporte de bugs durante la fase beta.*
+| Ruta | Descripción |
+| :--- | :--- |
+| `/app/` | Landing pública (sin login) |
+| `/app/dashboard` | Dashboard de usuario |
+| `/app/support` | Opciones de donación |
+| `/app/go/{code}` | Página de espera antes de redirect |
+| `/api/*` | Endpoints API (auth, urls, stats) |
+| `/{short_code}` | Redirección directa al destino |
 
-## Apoya el proyecto
-Las donaciones voluntarias estarán disponibles próximamente.
+## 💳 Planes
 
-## Licencia
-**GPLv3**.
-Este proyecto es software libre. La monetización se basa en la experiencia del servicio ofrecido (tiempos de espera, anuncios), mientras que el código permanece abierto y transparente.
+| Característica | 🆓 Free | ⭐ Premium |
+| :--- | :--- | :--- |
+| URLs activas | 3 | 100 |
+| Tiempo de espera | 10 segundos | 3 segundos |
+| Video promocional | Sí | No |
+
+## 💜 Apoya el Proyecto
+
+DD Shortener es software libre. Si te resulta útil, considera apoyarlo:
+
+**PayPal (recomendado):**
+```
+https://www.paypal.com/donate/?business=profediegoparra01@gmail.com
+```
+
+**Ko-fi (alternativa):**
+```
+https://ko-fi.com/diegodebian
+```
+
+**Activación Premium:**
+Envía un correo a `b2english.app@gmail.com` con:
+- El email de tu cuenta DD Shortener
+- Comprobante de donación
+
+Activación manual en 24-48 horas.
+
+## ⚠️ Nota Beta
+
+> **Best-effort**: Este servicio está en beta pública. La persistencia de datos y el uptime no están garantizados al 100%. Las características pueden cambiar según feedback.
+
+## 📁 Estructura del Proyecto
+
+```
+repo/
+├── backend/          # FastAPI + PostgreSQL
+├── frontend/         # React + Vite
+├── nginx/            # Proxy inverso
+├── app-config/       # Configuración dinámica (JSON)
+├── docs/             # Documentación
+├── scripts/          # Utilidades DB
+└── docker-compose.yml
+```
+
+## 📚 Documentación
+
+- [Admin Endpoints](docs/admin.md)
+- [Release Checklist](docs/release_checklist.md)
+- [Support & Donations](docs/support.md)
+- [Production Security](docs/production_security_checklist.md)
+- [Operations Runbook](docs/ops_runbook.md)
+
+## 📧 Contacto
+
+**b2english.app@gmail.com** — Correo temporal para beta.
+
+## 📄 Licencia
+
+**GPLv3** — Software libre. El código es abierto y transparente.

@@ -332,6 +332,21 @@ catch {
   Fail "Premium URL creation failed: $($_.Exception.Message)"
 }
 
+# ----------------------------
+# Test 10: /api/me returns plan field
+# ----------------------------
+Info "Test 10: /api/me returns plan field for premium user"
+try {
+  $me = JsonRequest "$BASE_URL/api/me" "GET" $null $premiumAuthHeaders
+  if (-not $me.plan) { Fail "/api/me response missing plan field" }
+  if ($me.plan -ne "premium") { Fail "Expected plan='premium', got plan='$($me.plan)'" }
+  if (-not $me.email) { Fail "/api/me response missing email field" }
+  Ok "/api/me returns plan='$($me.plan)' for user $($me.email)"
+}
+catch {
+  Fail "/api/me test failed: $($_.Exception.Message)"
+}
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "ALL TESTS PASSED" -ForegroundColor Green

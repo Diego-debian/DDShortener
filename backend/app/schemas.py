@@ -18,10 +18,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 
 class URLCreate(BaseModel):
+    """Input schema for creating a short URL. Strict validation, no extra fields allowed."""
     long_url: HttpUrl = Field(..., description="The original URL to shorten")
     expires_at: Optional[datetime] = Field(
         None, description="Optional expiration date/time for the short URL"
     )
+    
+    # Forbid extra fields to prevent injection of unwanted data
+    model_config = ConfigDict(extra='forbid')
 
 
 class URLInfo(BaseModel):
@@ -51,12 +55,20 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
+    """Input schema for user registration. Strict validation, no extra fields allowed."""
     password: str
+    
+    # Forbid extra fields to prevent injection of 'plan', 'is_active', etc.
+    model_config = ConfigDict(extra='forbid')
 
 
 class UserLogin(BaseModel):
+    """Input schema for user login. Strict validation, no extra fields allowed."""
     email: str
     password: str
+    
+    # Forbid extra fields for security
+    model_config = ConfigDict(extra='forbid')
 
 
 class User(UserBase):

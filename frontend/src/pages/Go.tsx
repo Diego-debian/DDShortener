@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 
 interface PromotionsConfig {
     hold_seconds: number;
+    free_hold_seconds?: number;
+    premium_hold_seconds?: number;
     mode?: 'stable' | 'random' | 'rotate';
     videos: Array<{
         id: string;
@@ -60,8 +62,11 @@ export default function Go() {
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
     const [isValidShortCode, setIsValidShortCode] = useState<boolean>(true);
     const [configLoaded, setConfigLoaded] = useState<boolean>(false);
+    const [userPlan, setUserPlan] = useState<string>('free');
+    const [isPremium, setIsPremium] = useState<boolean>(false);
     const hasRedirectedRef = useRef<boolean>(false);
     const countdownStartedRef = useRef<boolean>(false);
+    const configRef = useRef<PromotionsConfig | null>(null);
 
     // Validate short_code on mount
     useEffect(() => {
@@ -70,43 +75,67 @@ export default function Go() {
         }
     }, [short_code]);
 
-    // Fetch promotions config
+    // Fetch user plan (if authenticated) and promotions config
     useEffect(() => {
         if (!isValidShortCode || !short_code) return;
 
-        fetch('/app-config/promotions.json')
-            .then(response => {
-                if (!response.ok) throw new Error('Config not found');
-                return response.json();
+        // Helper to get hold seconds based on plan
+        const getHoldSeconds = (config: PromotionsConfig, plan: string): number => {
+            if (plan === 'premium') {
+                return normalizeHoldSeconds(config.premium_hold_seconds ?? 3);
+            }
+            return normalizeHoldSeconds(config.free_hold_seconds ?? config.hold_seconds);
+        };
+
+        // Fetch both config and user plan in parallel
+        const fetchConfig = fetch('/app-config/promotions.json')
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('Config not found')))
+            .catch(() => null);
+
+        const token = localStorage.getItem('url_shortener_token');
+        const fetchPlan = token
+            ? fetch('/api/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
             })
-            .then((data: PromotionsConfig) => {
-                // Normalize and set hold_seconds from config
-                const holdSeconds = normalizeHoldSeconds(data.hold_seconds);
-                console.debug('[Go] Config loaded, hold_seconds raw:', data.hold_seconds, '-> normalized:', holdSeconds);
+                .then(res => res.ok ? res.json() : null)
+                .catch(() => null)
+            : Promise.resolve(null);
+
+        Promise.all([fetchConfig, fetchPlan]).then(([config, user]) => {
+            // Determine user plan
+            const plan = user?.plan || 'free';
+            setUserPlan(plan);
+            setIsPremium(plan === 'premium');
+            console.debug('[Go] User plan:', plan, 'isPremium:', plan === 'premium');
+
+            // Process config
+            if (config) {
+                configRef.current = config;
+
+                // Calculate hold seconds based on plan
+                const holdSeconds = getHoldSeconds(config, plan);
+                console.debug('[Go] Config loaded, hold_seconds for plan', plan, ':', holdSeconds);
 
                 setTotalSeconds(holdSeconds);
-                // Only update countdown if timer hasn't started yet
                 if (!countdownStartedRef.current) {
                     setSecondsLeft(holdSeconds);
                 }
 
                 // Select video if available
-                if (data.videos && data.videos.length > 0) {
-                    const mode = data.mode || 'random';
+                if (config.videos && config.videos.length > 0) {
+                    const mode = config.mode || 'random';
                     console.debug('[Go] Selection mode:', mode);
                     let newSelectedId: string | null = null;
 
                     if (mode === 'stable') {
-                        // Stable selection (explicitly requested)
-                        const validVideos = data.videos.filter(v => VIDEO_ID_REGEX.test(v.id));
+                        const validVideos = config.videos.filter((v: { id: string }) => VIDEO_ID_REGEX.test(v.id));
                         if (validVideos.length > 0) {
                             const index = hashShortCode(short_code) % validVideos.length;
                             newSelectedId = validVideos[index].id;
                             console.debug('[Go] Stably selected video:', newSelectedId);
                         }
                     } else {
-                        // Weighted random selection (default)
-                        newSelectedId = selectWeightedRandomVideo(data.videos);
+                        newSelectedId = selectWeightedRandomVideo(config.videos);
                         console.debug('[Go] Randomly selected video:', newSelectedId);
                     }
 
@@ -114,17 +143,17 @@ export default function Go() {
                         setSelectedVideo(newSelectedId);
                     }
                 }
-                setConfigLoaded(true);
-            })
-            .catch(err => {
-                console.warn('[Go] Failed to load promotions config, using fallback:', err.message);
-                // Use fallback videos
+            } else {
+                // Fallback when no config
+                console.warn('[Go] No config loaded, using defaults');
                 if (FALLBACK_VIDEOS.length > 0) {
                     const index = hashShortCode(short_code) % FALLBACK_VIDEOS.length;
                     setSelectedVideo(FALLBACK_VIDEOS[index]);
                 }
-                setConfigLoaded(true);
-            });
+            }
+
+            setConfigLoaded(true);
+        });
     }, [short_code, isValidShortCode]);
 
     // Countdown timer with setInterval - starts immediately on mount
@@ -188,6 +217,15 @@ export default function Go() {
 
     return (
         <div className="max-w-4xl mx-auto">
+            {/* Premium Thank You Banner */}
+            {isPremium && (
+                <div className="bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 rounded-lg p-4 mb-6 text-center">
+                    <p className="text-amber-800 font-medium">
+                        💜 ¡Gracias por apoyar! Disfrutas una espera reducida ({totalSeconds}s)
+                    </p>
+                </div>
+            )}
+
             {/* Main Card */}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
                 {/* Header */}
@@ -196,9 +234,17 @@ export default function Go() {
                         {secondsLeft > 0 ? `Redirigiendo en ${secondsLeft} segundos...` : 'Redirigiendo...'}
                     </h1>
                     <p className="text-purple-100">
-                        Mientras tanto, mira este short del creador del proyecto.
+                        {isPremium
+                            ? 'Gracias por tu apoyo. Te redirigimos enseguida.'
+                            : 'Mientras tanto, mira este short del creador del proyecto.'
+                        }
                     </p>
-
+                    {/* Show user plan badge */}
+                    {userPlan !== 'free' && (
+                        <span className="inline-block mt-2 px-2 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded">
+                            {userPlan.toUpperCase()}
+                        </span>
+                    )}
                     {/* Progress Bar */}
                     <div className="mt-4 w-full bg-purple-400/30 rounded-full h-3">
                         <div

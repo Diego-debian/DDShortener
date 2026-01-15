@@ -2,84 +2,86 @@ import { Link } from 'react-router-dom';
 
 export default function Home() {
     return (
-        <div className="max-w-3xl mx-auto space-y-8 py-8">
-            {/* Header */}
+        <div className="max-w-3xl mx-auto space-y-8 py-8 px-4">
+            {/* Hero */}
             <div className="text-center space-y-4">
-                <h1 className="text-4xl font-bold text-gray-900">DD Shortener (Beta)</h1>
-                <p className="text-xl text-gray-600">by DiegoDebian</p>
-                <div className="prose max-w-none text-gray-700">
-                    <p>
-                        Un acortador de enlaces experimental con una página intermedia antes del redireccionamiento.
-                        <br />
-                        Este proyecto está en fase de prueba pública y se está validando con usuarios reales.
-                    </p>
-                </div>
+                <h1 className="text-4xl font-bold text-gray-900">DD Shortener</h1>
+                <p className="text-lg text-gray-600">Acorta tus enlaces. Simple y transparente.</p>
             </div>
 
-            {/* CTAs */}
-            <div className="flex justify-center gap-4">
+            {/* Primary CTAs */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Link
                     to="register"
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center shadow-md"
                 >
-                    Registrarme
+                    Crear cuenta gratis
                 </Link>
                 <Link
                     to="login"
-                    className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                    className="bg-white text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300 text-center"
                 >
-                    Iniciar Sesión
+                    Iniciar sesión
                 </Link>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid md:grid-cols-2 gap-6">
-                {/* Capabilities */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h2 className="text-xl font-semibold mb-3 text-gray-900">Qué puedes hacer hoy</h2>
-                    <ul className="list-disc list-inside space-y-2 text-gray-600">
-                        <li>Crear enlaces cortos</li>
-                        <li>Compartirlos mediante <code className="text-sm bg-gray-100 px-1 rounded">/app/go/&#123;short_code&#125;</code></li>
-                        <li>Página intermedia antes del redirect</li>
-                        <li>Estadísticas públicas por enlace</li>
-                        <li>Proyecto open source (GPLv3)</li>
+            {/* What is DDShortener */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                <h2 className="text-xl font-semibold mb-3 text-gray-900">¿Qué es DD Shortener?</h2>
+                <p className="text-gray-600">
+                    Un acortador de enlaces con página intermedia que muestra contenido del creador.
+                    <br />
+                    <span className="text-sm text-gray-500">Proyecto open source (GPLv3) en fase beta pública.</span>
+                </p>
+            </div>
+
+            {/* Free vs Premium */}
+            <div className="grid md:grid-cols-2 gap-4">
+                {/* Free Plan */}
+                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">🆓 Plan Gratuito</h3>
+                    <ul className="space-y-2 text-gray-600 text-sm">
+                        <li className="flex items-start gap-2">
+                            <span className="text-gray-400">•</span>
+                            <span>Hasta 3 URLs activas</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-gray-400">•</span>
+                            <span>Página de espera con video (10 seg)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-gray-400">•</span>
+                            <span>Estadísticas por enlace</span>
+                        </li>
                     </ul>
                 </div>
 
-                {/* Transparency */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h2 className="text-xl font-semibold mb-3 text-gray-900">Transparencia</h2>
-                    <p className="text-gray-600 mb-2">
-                        En el plan gratuito se muestra un video antes del redireccionamiento.
-                    </p>
-                    <p className="text-gray-600 mb-2">
-                        Esto permite cubrir costos del servidor durante la fase beta.
-                    </p>
-                    <p className="text-gray-600">
-                        El plan Premium no mostrará anuncios.
-                    </p>
+                {/* Premium Plan */}
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg border border-purple-200">
+                    <h3 className="text-lg font-semibold text-purple-900 mb-3">⭐ Plan Premium</h3>
+                    <ul className="space-y-2 text-gray-700 text-sm">
+                        <li className="flex items-start gap-2">
+                            <span className="text-purple-500">✓</span>
+                            <span>Hasta 100 URLs activas</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-purple-500">✓</span>
+                            <span>Espera reducida (3 seg)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-purple-500">✓</span>
+                            <span>Apoyas el proyecto</span>
+                        </li>
+                    </ul>
+                    <p className="text-xs text-purple-600 mt-3">Obtén Premium con una donación voluntaria</p>
                 </div>
             </div>
 
-            {/* Roadmap */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h2 className="text-xl font-semibold mb-3 text-gray-900">Qué viene después (sin fechas)</h2>
-                <ul className="list-disc list-inside space-y-2 text-gray-600 mb-4">
-                    <li>Plan Premium sin anuncios</li>
-                    <li>Menor tiempo de espera</li>
-                    <li>Más control para usuarios frecuentes</li>
-                    <li>Campañas promocionales (solo en Free)</li>
-                </ul>
-                <p className="text-sm text-gray-500 italic">El orden dependerá del uso real y el feedback.</p>
-            </div>
-
-            {/* Support */}
+            {/* Support CTA */}
             <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border border-purple-200 text-center">
-                <h2 className="text-xl font-semibold mb-3 text-gray-900">💜 Apoya el ecosistema DiegoDebian</h2>
-                <p className="text-gray-700 mb-4">
-                    Tu apoyo mantiene mis proyectos online (servidor, dominio y mejoras).
-                    <br />
-                    PayPal es el método recomendado.
+                <h2 className="text-xl font-semibold mb-2 text-gray-900">💜 Apoya el ecosistema DiegoDebian</h2>
+                <p className="text-gray-600 text-sm mb-4">
+                    Tu apoyo mantiene mis proyectos online. PayPal es el método recomendado.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                     <a
@@ -103,11 +105,13 @@ export default function Home() {
             </div>
 
             {/* Contact */}
-            <div className="text-center text-gray-600">
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">Contacto</h2>
-                <a href="mailto:b2english.app@gmail.com" className="text-blue-600 hover:underline">b2english.app@gmail.com</a>
-                <p className="text-sm mt-1">Correo temporal durante la fase beta.</p>
+            <div className="text-center text-gray-500 text-sm">
+                <p>
+                    Contacto: <a href="mailto:b2english.app@gmail.com" className="text-blue-600 hover:underline">b2english.app@gmail.com</a>
+                </p>
+                <p className="mt-1 text-xs">Proyecto by DiegoDebian • Beta pública</p>
             </div>
         </div>
     );
 }
+

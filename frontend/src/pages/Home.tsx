@@ -73,7 +73,7 @@ export default function Home() {
                             <span>Apoyas el proyecto</span>
                         </li>
                     </ul>
-                    <p className="text-xs text-purple-600 mt-3">Obtén Premium con una donación voluntaria</p>
+                    <p className="text-xs text-purple-600 mt-3">Apoya y te activamos Premium manualmente</p>
                 </div>
             </div>
 

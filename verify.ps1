@@ -463,6 +463,155 @@ else {
   Write-Host "WARN: Some containers are not running. This is informational only." -ForegroundColor Yellow
 }
 
+# ----------------------------
+# Test 14: Admin endpoints require admin role (403 for non-admin)
+# ----------------------------
+Info "Test 14: Admin endpoints require admin role"
+
+# Use the premium user token from Test 9-10 (still logged in)
+# Try to access admin endpoint as premium user - should get 403
+try {
+  $adminUrl = "$BASE_URL/api/admin/users/test@test.com/plan"
+  $body = @{ plan = "premium" } | ConvertTo-Json
+  $result = JsonRequest $adminUrl "PATCH" $body $premiumAuthHeaders
+  Fail "Premium user should NOT be able to access admin endpoints"
+}
+catch {
+  $code = GetStatusCodeFromException $_
+  if ($code -eq 403) {
+    Ok "Non-admin user correctly got 403 Forbidden on admin endpoint"
+  }
+  else {
+    Fail "Expected 403, got $code"
+  }
+}
+
+# ----------------------------
+# Test 15: Admin can update user plan
+# ----------------------------
+Info "Test 15: Admin can update user plan"
+
+# Create and promote an admin user
+$ADMIN_TIMESTAMP = [int][Math]::Floor((Get-Date).ToUniversalTime().Subtract((Get-Date "1970-01-01")).TotalSeconds) + 100
+$ADMIN_EMAIL = "admin+$ADMIN_TIMESTAMP@test.local"
+
+# Register admin user
+try {
+  $adminRegBody = @{ email = $ADMIN_EMAIL; password = $PASSWORD } | ConvertTo-Json
+  $adminReg = JsonRequest "$BASE_URL/api/auth/register" "POST" $adminRegBody @{}
+  if (-not $adminReg.id) { Fail "Admin user registration failed" }
+  Write-Host "Registered admin test user: $ADMIN_EMAIL" -ForegroundColor Gray
+}
+catch {
+  Fail "Admin registration failed: $($_.Exception.Message)"
+}
+
+# Promote to admin via SQL
+Write-Host "Promoting user to admin via SQL..." -ForegroundColor Gray
+$sqlCmd = "docker compose exec -T db psql -U shortener_user -d shortener -c `"UPDATE users SET plan = 'admin' WHERE email = '$ADMIN_EMAIL';`""
+$prevErrorAction = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$sqlOut = Invoke-Expression $sqlCmd 2>&1
+$ErrorActionPreference = $prevErrorAction
+
+if ($LASTEXITCODE -ne 0) {
+  Write-Host $sqlOut
+  Fail "Failed to promote user to admin"
+}
+Write-Host "User promoted to admin" -ForegroundColor Gray
+
+# Login as admin
+try {
+  $adminLoginBody = @{ email = $ADMIN_EMAIL; password = $PASSWORD } | ConvertTo-Json
+  $adminLogin = JsonRequest "$BASE_URL/api/auth/login-json" "POST" $adminLoginBody @{}
+  if (-not $adminLogin.access_token) { Fail "Admin login failed" }
+  $ADMIN_TOKEN = $adminLogin.access_token
+  Write-Host "Admin user logged in" -ForegroundColor Gray
+}
+catch {
+  Fail "Admin login failed: $($_.Exception.Message)"
+}
+
+$adminAuthHeaders = @{ Authorization = "Bearer $ADMIN_TOKEN" }
+
+# Create a test user to modify
+$TARGET_EMAIL = "target+$ADMIN_TIMESTAMP@test.local"
+try {
+  $targetRegBody = @{ email = $TARGET_EMAIL; password = $PASSWORD } | ConvertTo-Json
+  $targetReg = JsonRequest "$BASE_URL/api/auth/register" "POST" $targetRegBody @{}
+  Write-Host "Created target user: $TARGET_EMAIL" -ForegroundColor Gray
+}
+catch {
+  # May already exist, continue
+  Write-Host "Target user may already exist, continuing..." -ForegroundColor Gray
+}
+
+# Admin updates target user's plan to premium
+try {
+  $updatePlanBody = @{ plan = "premium" } | ConvertTo-Json
+  $updateResult = JsonRequest "$BASE_URL/api/admin/users/$TARGET_EMAIL/plan" "PATCH" $updatePlanBody $adminAuthHeaders
+  if ($updateResult.plan -ne "premium") {
+    Fail "Plan update failed: expected 'premium', got '$($updateResult.plan)'"
+  }
+  Ok "Admin successfully updated user plan to 'premium'"
+}
+catch {
+  Fail "Admin plan update failed: $($_.Exception.Message)"
+}
+
+# ----------------------------
+# Test 16: Admin can update URL status
+# ----------------------------
+Info "Test 16: Admin can update URL status"
+
+# Use one of the URLs created in Test 5 or 9
+# Get a URL short_code - first one from premium user (Test 9)
+$testUrlCode = "1h"  # From premium user test
+
+# First verify URL exists
+try {
+  $statsRes = JsonRequest "$BASE_URL/api/urls/$testUrlCode/stats" "GET" $null $premiumAuthHeaders
+  if (-not $statsRes.url) {
+    # Try another code
+    $testUrlCode = "Y"  # From earlier test
+    $statsRes = JsonRequest "$BASE_URL/api/urls/$testUrlCode/stats" "GET" $null $authHeaders
+  }
+  Write-Host "Using URL code: $testUrlCode for status update test" -ForegroundColor Gray
+}
+catch {
+  # Create a new URL as admin
+  $newUrlBody = @{ long_url = "https://admin-test.example.com" } | ConvertTo-Json
+  $newUrl = JsonRequest "$BASE_URL/api/urls" "POST" $newUrlBody $adminAuthHeaders
+  $testUrlCode = $newUrl.short_code
+  Write-Host "Created new URL for test: $testUrlCode" -ForegroundColor Gray
+}
+
+# Admin disables the URL
+try {
+  $disableBody = @{ is_active = $false } | ConvertTo-Json
+  $disableResult = JsonRequest "$BASE_URL/api/admin/urls/$testUrlCode" "PATCH" $disableBody $adminAuthHeaders
+  if ($disableResult.is_active -ne $false) {
+    Fail "URL disable failed: is_active should be false"
+  }
+  Write-Host "  URL disabled successfully" -ForegroundColor Gray
+}
+catch {
+  Fail "Admin URL disable failed: $($_.Exception.Message)"
+}
+
+# Admin re-enables the URL
+try {
+  $enableBody = @{ is_active = $true } | ConvertTo-Json
+  $enableResult = JsonRequest "$BASE_URL/api/admin/urls/$testUrlCode" "PATCH" $enableBody $adminAuthHeaders
+  if ($enableResult.is_active -ne $true) {
+    Fail "URL enable failed: is_active should be true"
+  }
+  Ok "Admin successfully toggled URL status (disabled then enabled)"
+}
+catch {
+  Fail "Admin URL enable failed: $($_.Exception.Message)"
+}
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "ALL TESTS PASSED" -ForegroundColor Green

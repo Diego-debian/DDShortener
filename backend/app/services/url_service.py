@@ -19,14 +19,18 @@ from fastapi import HTTPException
 from sqlalchemy import select, func
 
 async def create_url(session: AsyncSession, url_in: URLCreate, user: User) -> URL:
-    # Free users can only have 3 active URLs
+    # Check plan-based URL limits
+    result = await session.execute(
+        select(func.count(URL.id)).where(URL.user_email == user.email, URL.is_active == True)
+    )
+    count = result.scalar() or 0
+
     if user.plan == "free":
-        result = await session.execute(
-            select(func.count(URL.id)).where(URL.user_email == user.email, URL.is_active == True)
-        )
-        count = result.scalar() or 0
         if count >= 3:
             raise HTTPException(status_code=403, detail="Free plan limit reached (max 3 active URLs)")
+    elif user.plan == "premium":
+        if count >= 100:
+            raise HTTPException(status_code=403, detail="Premium plan limit reached (max 100 active URLs)")
 
     # Create the URL record first to get an auto-generated ID
     new_url = URL(

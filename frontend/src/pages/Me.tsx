@@ -50,9 +50,9 @@ export default function Me() {
     if (loading) {
         return (
             <div className="max-w-3xl">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">My Profile</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-6">Mi Perfil</h1>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <p className="text-gray-500">Loading...</p>
+                    <p className="text-gray-500">Cargando...</p>
                 </div>
             </div>
         );
@@ -61,7 +61,7 @@ export default function Me() {
     if (error) {
         return (
             <div className="max-w-3xl">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">My Profile</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-6">Mi Perfil</h1>
                 <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
                     {error}
                 </div>
@@ -76,42 +76,42 @@ export default function Me() {
     return (
         <div className="max-w-3xl">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
                 <button
                     onClick={handleLogout}
                     className="px-4 py-2 border border-red-600 text-red-600 rounded-md hover:bg-red-50"
                 >
-                    Logout
+                    Cerrar Sesión
                 </button>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Information</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Información de Cuenta</h2>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            User ID
+                            ID de Usuario
                         </label>
                         <p className="text-gray-900">{userData.id}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
+                            Correo Electrónico
                         </label>
                         <p className="text-gray-900">{userData.email}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Account Status
+                            Estado de Cuenta
                         </label>
                         <p className="text-gray-900">
                             {userData.is_active ? (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Active
+                                    Activo
                                 </span>
                             ) : (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    Inactive
+                                    Inactivo
                                 </span>
                             )}
                         </p>
@@ -124,7 +124,7 @@ export default function Me() {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Member Since
+                            Miembro Desde
                         </label>
                         <p className="text-gray-900">
                             {new Date(userData.created_at).toLocaleDateString('en-US', {
@@ -138,19 +138,19 @@ export default function Me() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Usage Statistics</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Estadísticas de Uso</h2>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-sm text-gray-500">URLs Created</p>
+                        <p className="text-sm text-gray-500">URLs Creadas</p>
                         <p className="text-2xl font-bold text-gray-900">--</p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Total Clicks</p>
+                        <p className="text-sm text-gray-500">Clics Totales</p>
                         <p className="text-2xl font-bold text-gray-900">--</p>
                     </div>
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
-                    Full statistics integration coming soon.
+                    Integración completa de estadísticas próximamente.
                 </p>
             </div>
         </div>

@@ -388,6 +388,81 @@ else {
   }
 }
 
+# ----------------------------
+# Test 12: App config files accessible
+# ----------------------------
+Info "Test 12: App config files accessible"
+
+$configFiles = @(
+  @{ Name = "promotions.json"; Url = "http://localhost/app-config/promotions.json" },
+  @{ Name = "donations.json"; Url = "http://localhost/app-config/donations.json" }
+)
+
+$allConfigOk = $true
+foreach ($config in $configFiles) {
+  try {
+    $response = Invoke-WebRequest -Uri $config.Url -Method HEAD -UseBasicParsing -TimeoutSec 10
+    if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 304) {
+      Write-Host "  $($config.Name): OK ($($response.StatusCode))" -ForegroundColor Gray
+    }
+    else {
+      Write-Host "  $($config.Name): Unexpected status $($response.StatusCode)" -ForegroundColor Yellow
+      $allConfigOk = $false
+    }
+  }
+  catch {
+    Write-Host "  $($config.Name): FAILED - $($_.Exception.Message)" -ForegroundColor Red
+    $allConfigOk = $false
+  }
+}
+
+if ($allConfigOk) {
+  Ok "All app config files accessible"
+}
+else {
+  Fail "Some app config files are not accessible"
+}
+
+# ----------------------------
+# Test 13: Container status check (informational)
+# ----------------------------
+Info "Test 13: Container status check (informational)"
+
+$expectedContainers = @(
+  "shortener_proxy",
+  "shortener_backend",
+  "shortener_frontend",
+  "shortener_db"
+)
+
+$containerStatus = docker compose ps --format json 2>$null | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+$allContainersUp = $true
+foreach ($expected in $expectedContainers) {
+  $container = $containerStatus | Where-Object { $_.Name -eq $expected }
+  if ($container) {
+    $state = $container.State
+    if ($state -eq "running") {
+      Write-Host "  $expected : running" -ForegroundColor Gray
+    }
+    else {
+      Write-Host "  WARN: $expected is $state (not running)" -ForegroundColor Yellow
+      $allContainersUp = $false
+    }
+  }
+  else {
+    Write-Host "  WARN: $expected not found" -ForegroundColor Yellow
+    $allContainersUp = $false
+  }
+}
+
+if ($allContainersUp) {
+  Ok "All expected containers are running"
+}
+else {
+  Write-Host "WARN: Some containers are not running. This is informational only." -ForegroundColor Yellow
+}
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "ALL TESTS PASSED" -ForegroundColor Green

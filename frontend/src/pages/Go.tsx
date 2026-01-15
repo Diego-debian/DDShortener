@@ -246,12 +246,18 @@ export default function Go() {
             </div>
 
             {/* Back Link */}
-            <div className="text-center">
+            <div className="text-center space-y-2">
                 <Link
                     to="/dashboard"
-                    className="text-gray-500 hover:text-gray-700 text-sm"
+                    className="text-gray-500 hover:text-gray-700 text-sm block"
                 >
                     ← Volver al Dashboard
+                </Link>
+                <Link
+                    to="/support"
+                    className="text-purple-500 hover:text-purple-700 text-xs"
+                >
+                    ¿Quieres quitar la espera? Apoya el proyecto →
                 </Link>
             </div>
         </div>

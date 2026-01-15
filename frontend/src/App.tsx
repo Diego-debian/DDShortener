@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Go from './pages/Go'
 import Stats from './pages/Stats'
 import Me from './pages/Me'
+import Support from './pages/Support'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="support" element={<Support />} />
 
         {/* Protected routes */}
         <Route path="dashboard" element={

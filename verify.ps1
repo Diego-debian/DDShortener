@@ -265,6 +265,73 @@ catch {
   Fail "Stats test failed: $($_.Exception.Message)"
 }
 
+# ----------------------------
+# Test 9: Premium plan allows more than 3 URLs
+# ----------------------------
+Info "Test 9: Premium plan allows > 3 URLs"
+
+# Create a new premium user
+$PREMIUM_TIMESTAMP = [int][Math]::Floor((Get-Date).ToUniversalTime().Subtract((Get-Date "1970-01-01")).TotalSeconds) + 1
+$PREMIUM_EMAIL = "premium+$PREMIUM_TIMESTAMP@test.local"
+
+# Register premium user
+try {
+  $premRegBody = @{ email = $PREMIUM_EMAIL; password = $PASSWORD } | ConvertTo-Json
+  $premReg = JsonRequest "$BASE_URL/api/auth/register" "POST" $premRegBody @{}
+  if (-not $premReg.id) { Fail "Premium user registration failed" }
+  Write-Host "Registered premium test user: $PREMIUM_EMAIL" -ForegroundColor Gray
+}
+catch {
+  Fail "Premium user registration failed: $($_.Exception.Message)"
+}
+
+# Promote user to premium via direct SQL (simulates admin action)
+Write-Host "Promoting user to premium via SQL..." -ForegroundColor Gray
+$sqlCmd = "docker compose exec -T db psql -U shortener_user -d shortener -c `"UPDATE users SET plan = 'premium' WHERE email = '$PREMIUM_EMAIL';`""
+$prevErrorAction = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$sqlOut = Invoke-Expression $sqlCmd 2>&1
+$ErrorActionPreference = $prevErrorAction
+
+if ($LASTEXITCODE -ne 0) {
+  Write-Host $sqlOut
+  Fail "Failed to promote user to premium"
+}
+Write-Host "User promoted to premium" -ForegroundColor Gray
+
+# Login as premium user
+try {
+  $premLoginBody = @{ email = $PREMIUM_EMAIL; password = $PASSWORD } | ConvertTo-Json
+  $premLogin = JsonRequest "$BASE_URL/api/auth/login-json" "POST" $premLoginBody @{}
+  if (-not $premLogin.access_token) { Fail "Premium login failed" }
+  $PREMIUM_TOKEN = $premLogin.access_token
+  Write-Host "Premium user logged in" -ForegroundColor Gray
+}
+catch {
+  Fail "Premium login failed: $($_.Exception.Message)"
+}
+
+$premiumAuthHeaders = @{ Authorization = "Bearer $PREMIUM_TOKEN" }
+
+# Create 5 URLs as premium user (should NOT hit the 3 URL limit)
+try {
+  $premiumCodes = @()
+  for ($i = 1; $i -le 5; $i++) {
+    $payload = @{ long_url = "https://premium-example.com/page$i" } | ConvertTo-Json
+    $res = JsonRequest "$BASE_URL/api/urls" "POST" $payload $premiumAuthHeaders
+    if (-not $res.short_code) { Fail "Premium URL #$i missing short_code" }
+    $premiumCodes += $res.short_code
+  }
+  Ok "Premium user created 5 URLs: $($premiumCodes -join ', ')"
+}
+catch {
+  $code = GetStatusCodeFromException $_
+  if ($code -eq 403) {
+    Fail "Premium user got 403 on URL creation (limit should be 100, not 3)"
+  }
+  Fail "Premium URL creation failed: $($_.Exception.Message)"
+}
+
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "ALL TESTS PASSED" -ForegroundColor Green

@@ -1,6 +1,6 @@
 {
-    "title": "Apoya DD Shortener",
-    "subtitle": "Tu donación ayuda a mantener el servicio gratuito y a desarrollar nuevas funciones.",
+    "title": "💜 Apoya el ecosistema DiegoDebian",
+    "subtitle": "Tu apoyo mantiene mis proyectos online (servidor, dominio y mejoras). PayPal es el método recomendado.",
     "methods": [
         {
             "name": "PayPal",
@@ -22,7 +22,7 @@
     "disclaimer": "No procesamos pagos directamente. Las donaciones se gestionan a través de plataformas externas seguras.",
     "activation_instructions": {
         "title": "¿Ya donaste? Activa tu Premium",
-        "subtitle": "Por ahora, la activación es manual por correo:",
+        "subtitle": "Indícame el correo de tu cuenta y te activo Premium manualmente:",
         "steps": [
             "Envía un correo a b2english.app@gmail.com",
             "Incluye el email de tu cuenta DD Shortener",

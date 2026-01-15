@@ -303,7 +303,7 @@ export default function Go() {
                     to="/support"
                     className="text-purple-500 hover:text-purple-700 text-xs"
                 >
-                    ¿Quieres quitar la espera? Apoya el proyecto →
+                    ¿Quieres quitar la espera? Apoya el proyecto y te activo Premium →
                 </Link>
             </div>
         </div>
